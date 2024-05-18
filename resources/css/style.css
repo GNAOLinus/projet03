@@ -1,0 +1,38 @@
+.image-banner {
+ 
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh; /* Hauteur égale à la hauteur de la fenêtre du navigateur */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+.image-banner2 {
+ 
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 75vh; /* Hauteur égale à la hauteur de la fenêtre du navigateur */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+
+#transparant{
+  background-color: rgb(8, 8, 8, 0.7); /* Rend les champs email et mot de passe semi-transparent */
+  border: 2px solid #fff;
+ 
+}
+
+
+
+.image-banner .container {
+  position: relative;
+  z-index: 1;
+}
