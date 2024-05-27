@@ -39,7 +39,6 @@ class FiliereController extends Controller
     {
         $validatedData = $request->validate([
             'filiere' => 'required',
-            'addresse' => 'required',
         ]);
     
         $filiere->update($validatedData);

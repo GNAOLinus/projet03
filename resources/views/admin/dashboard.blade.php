@@ -11,13 +11,13 @@
                 <div class="card-body">
                     <ul class="list-group listmemoire.allmemoire-group-flush">
                         <li class="list-group-item">
-                            <a href="{{route('memoire.allmemoire')}}" class="btn btn-primary">Publier des mémoires</a>
+                            <a href="{{route('memoire.allmemoire',['page'=>'yes'])}}" class="btn btn-primary">Publier des mémoires</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="#" class="btn btn-primary">Gérer les mémoires publiées</a>
+                            <a href="{{Route('memoirepublier')}}" class="btn btn-primary">Gérer les mémoires publiées</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="{{route('memoire.allmemoire')}}" class="btn btn-primary">Liste des mémoires</a>
+                            <a href="{{route('memoire.allmemoire',['page'=>'no'])}}" class="btn btn-primary">Liste des mémoires</a>
                         </li>
                     </ul>
                 </div>
@@ -50,12 +50,11 @@
                
                 <div class="card-body">
                     <ul class="list-group list-group-flush" id="copie-lien">
-                        @foreach (['Administrateur', 'Etudiant', 'Enseignant'] as $index => $role)
-                        <li class="list-group-item">
-                            <button class="btn btn-primary copy-button" data-role="{{ $index + 1 }}">Ajouter un(e) {{ ucfirst($role) }}</button>
-                            <input type="text" class="link-input form-control" style="display: none;">
-                        </li>
-                        
+                            @foreach (['Administrateur', 'Etudiant', 'Enseignant'] as $index => $role)
+                                <li class="list-group-item">
+                                    <button class="btn btn-primary copy-button" data-role="{{ $index + 1 }}">Ajouter un(e) {{ ucfirst($role) }}</button>
+                                    <input type="text" class="link-input form-control" style="display: none;">
+                                </li>
                         @endforeach
                         <li class="list-group-item">
                             <a href="{{route('users')}}" class="btn btn-light">Liste des utilisateurs</a>
@@ -141,37 +140,58 @@
     </div>   
 </main>
 <script>
-    document.getElementById('id_promotion').addEventListener('change', function() {
-        var selectedPromotion = this.value;
-        var buttons = document.querySelectorAll('.copy-button');
-        
-        buttons.forEach(function(button) {
-            button.disabled = selectedPromotion === '';
-        });
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        var promotionSelect = document.getElementById('id_promotion');
+        var copyButtons = document.querySelectorAll('.copy-button');
 
-    document.querySelectorAll('.copy-button').forEach(function(button) {
-        button.addEventListener('click', function() {
-            var selectedPromotion = document.getElementById('id_promotion').value;
-            
-            // Vérifier si une promotion est sélectionnée
-            if (selectedPromotion === '') {
-                alert('Veuillez sélectionner une promotion avant de copier le lien.');
-                return; // Arrêter l'exécution de la fonction si aucune promotion n'est sélectionnée
-            }
-            
-            var input = this.parentNode.querySelector('.link-input');
-            var role = this.getAttribute('data-role');
-            var link = "http://127.0.0.1:8000/register/" + role + "/" + selectedPromotion;
-            input.value = link;
-            input.style.display = 'block'; // Rendre l'élément input visible
-            input.select();
-            document.execCommand('copy');
-            input.style.display = 'none'; // Rendre l'élément input invisible à nouveau
-            alert('Lien copié dans le presse-papiers !');
+        function toggleCopyButtons() {
+            var selectedPromotion = promotionSelect.value;
+            copyButtons.forEach(function(button) {
+                button.disabled = selectedPromotion === '';
+            });
+        }
+
+        promotionSelect.addEventListener('change', toggleCopyButtons);
+        toggleCopyButtons();
+
+        copyButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var selectedPromotion = promotionSelect.value;
+
+                if (selectedPromotion === '') {
+                    alert('Veuillez sélectionner une promotion avant de copier le lien.');
+                    return;
+                }
+
+                var input = this.parentNode.querySelector('.link-input');
+                var role = this.getAttribute('data-role');
+
+                var url = `/generate-link/${role}/${selectedPromotion}`;
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        var link = data.link;
+                        console.log(link);
+
+                        input.value = link;
+                        input.style.display = 'block';
+                        input.select();
+                        document.execCommand('copy');
+                        input.style.display = 'none';
+                        alert('Lien copié dans le presse-papiers !');
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération des données:', error);
+                        alert('Une erreur s\'est produite lors de la récupération des données.');
+                    });
+            });
         });
     });
 </script>
-
-
 @endsection

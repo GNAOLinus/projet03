@@ -14,22 +14,14 @@ class CreateSoutenancesTable extends Migration
     public function up()
     {
         Schema::create('soutenances', function (Blueprint $table) {
-            $table->id('id');
-            $table->unsignedBigInteger('id_memoire');
-            $table->unsignedBigInteger('id_site');
+            $table->id();
+            $table->foreignId('id_memoire')->constrained('memoires');
+            $table->foreignId('id_filiere')->constrained('filieres');
+            $table->foreignId('id_site')->constrained('sites');
+            $table->foreignId('id_jury')->constrained('juries');
             $table->date('date_soutenance');
-            $table->unsignedBigInteger('id_binome');
-            $table->unsignedBigInteger('id_filiere');
             $table->time('heurs_soutenace');
-            $table->foreign('id_site')->references('id')->on('sites');    
             $table->timestamps();
-
-            
-            
-
-            $table->foreign('id_memoire')->references('id')->on('memoires');
-            $table->foreign('id_binome')->references('id')->on('binomes');
-            $table->foreign('id_filiere')->references('id')->on('filieres');
         });
     }
 

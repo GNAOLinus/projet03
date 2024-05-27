@@ -18,10 +18,9 @@ class CreateMemoiresTable extends Migration
             $table->string('titre');
             $table->text('resume');
             $table->string('fichier');
-            $table->string('statut');
-            $table->string('appreciation');
-            $table->string('note');
-            $table->string('promotion');
+            $table->string('statut')->nullable();
+            $table->string('appreciation')->nullable();
+            $table->string('note')->nullable();
             $table->unsignedBigInteger('id_filiere');
             $table->unsignedBigInteger('id_binome');
 

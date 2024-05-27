@@ -4,6 +4,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h2>Liste des jurys</h2>
+   
                 <table class="table">
                     <thead>
                         <tr>
@@ -18,9 +19,9 @@
                         @foreach($juries as $jury)
                         <tr>
                             <td>{{ $jury->id }}</td>
-                            <td>{{ $jury->id_enseignant1}}</td>
-                            <td>{{ $jury->id_enseignant2}}</td>
-                            <td>{{ $jury->id_enseignant3}}</td>
+                            <td>{{ $jury->enseignant1->name }}</td>
+                            <td>{{ $jury->enseignant2->name }}</td>
+                            <td>{{ $jury->enseignant3->name }}</td>
                             <td>
                                 <a href="{{ route('juries.edit', ['jury' => $jury->id]) }}" class="btn btn-primary">Modifier</a>
                                 <form action="{{ route('juries.destroy', ['jury' => $jury->id]) }}" method="POST" style="display: inline-block;">

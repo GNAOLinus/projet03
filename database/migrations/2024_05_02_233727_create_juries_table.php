@@ -17,7 +17,7 @@ class CreateJuriesTable extends Migration
             $table->id('id');
             $table->unsignedBigInteger('id_enseignant1');
             $table->unsignedBigInteger('id_enseignant2');
-            $table->unsignedBigInteger('id_enseignant3');
+            $table->unsignedBigInteger('id_enseignant3')->nullable();
             $table->unsignedBigInteger('id_filiere');
             
             $table->foreign('id_enseignant1')->references('id')->on('users');

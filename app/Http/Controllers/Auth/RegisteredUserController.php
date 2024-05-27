@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -10,53 +9,109 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Illuminate\View\View;
-use App\Models\Filiere; // Assurez-vous d'importer le modèle Filiere
+use App\Models\Filiere;
+use App\Models\InfoEtudiant;
 use App\Models\Site;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Affiche la vue d'enregistrement.
      */
-    public function create($role,$promotion)
+    public function create($encryptedData)
     {
-        $filieres = Filiere::all(); // Récupérer toutes les filières depuis la base de données
-        $sites = Site::all(); // Récupérer toutes les sites depuis la base de données
-        return view('auth.register', ['role' => $role, 'filieres' => $filieres, 'sites' => $sites, 'promotion'=> $promotion, ]); 
+        try {
+            // Décrypter les données
+            $data = Crypt::decrypt($encryptedData);
+
+            // Valider les données décryptées
+            if (!isset($data['role']) || !isset($data['promotion'])) {
+                abort(404, 'Données d\'enregistrement invalides.');
+            }
+
+            // Récupérer les informations nécessaires
+            $role = $data['role'];
+            $promotion = $data['promotion'];
+            $filieres = Filiere::all();
+            $sites = Site::all();
+
+            // Retourner la vue d'enregistrement avec les données nécessaires
+            return view('auth.register', compact('encryptedData', 'role', 'filieres', 'sites', 'promotion'));
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            Log::error('Échec du décryptage des données d\'enregistrement', ['error' => $e->getMessage()]);
+            abort(404); // Gérez l'erreur comme vous le souhaitez
+        }
     }
-    
+
     /**
-     * Handle an incoming registration request.
+     * Traite une demande d'inscription entrante.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request):RedirectResponse
     {
-        $request->validate([
+        // Validation des données du formulaire
+        $validatedData = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'id_role' => ['integer', 'exists:roles,id'],
-            'id_site' => ['integer', 'exists:sites,id'],
-            'id_filiere' => ['integer', 'exists:filieres,id'], // Validation de la filière
-            'id_promotion' => ['integer', 'exists:promotions,id'], // Validation de la promotion
+            'id_role' => ['required', 'integer', 'exists:roles,id'],
+            'id_site' => ['required', 'integer', 'exists:sites,id'],
+            'id_filiere' => ['required', 'integer', 'exists:filieres,id'],
+            'id_promotion' => ['required', 'integer', 'exists:promotions,id'],
+            'matricule' => ['sometimes', 'integer'],
+            'encryptedData' => ['required', 'string'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'id_role' => $request->id_role,
-            'id_site' => $request->id_site,
-            'id_filiere' => $request->id_filiere, // Utilisation de la filière sélectionnée
-            'id_promotion' => $request->id_promotion, // Utilisation de la promotion sélectionnée
-        ]);
+        // Récupérer les données décryptées
+        $encryptedData = $request->input('encryptedData');
 
-        event(new Registered($user));
+        if ($request->id_role == 2) {
+            $userMatrice = InfoEtudiant::where('matricule', $request->matricule)->first();
 
-        Auth::login($user);
+            if ($userMatrice &&
+            $userMatrice->name === $request->name &&
+            $userMatrice->id_site === $request->id_site &&
+            $userMatrice->id_filiere === $request->id_filiere) {
+        
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'id_role' => $request->id_role,
+                'id_site' => $request->id_site,
+                'id_filiere' => $request->id_filiere,
+                'id_promotion' => $request->id_promotion,
+            ]);
+        
+            event(new Registered($user));
+            Auth::login($user);
+        
+            return redirect()->route('dashboard');
+        } else {
+            // Redirection vers la vue d'enregistrement avec les erreurs
+            return redirect()->to('http://localhost:8000/register/eyJpdiI6IjBBZ1NKQ0dNZklQd3I1dUNaY3lJbWc9PSIsInZhbHVlIjoiZDIyWlZGRGlLOE43UGV3SkhXcytlZVdGcG9mYlRtTXFsanllQzZQL2VqZEgrNG5aQWZhS2I2d3c3Z0FQSnlUYkxYTkd6NUlYdlhVRXFEMituSkxqeFE9PSIsIm1hYyI6IjJhOTliZTNhNGFiNTBkOTY0YTc3ZDBlNjE5ZWRiZjAwYmFlYmEyNjQ1NDJjMDExYzc1YzUwOTdhMTZjZjc2N2YiLCJ0YWciOiIifQ==')
+                 ->withErrors(['message' => 'Informations incorrectes de l\'étudiant.']);
 
-        return redirect(route('dashboard', absolute: false));
+        }
+        
+        } else {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'id_role' => $request->id_role,
+                'id_site' => $request->id_site,
+                'id_filiere' => $request->id_filiere,
+                'id_promotion' => $request->id_promotion,
+            ]);
+
+            event(new Registered($user));
+            Auth::login($user);
+
+            return redirect()->route('dashboard');
+        };
     }
 }

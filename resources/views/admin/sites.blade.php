@@ -5,7 +5,7 @@
 
         <div class="col-md-9">
             <h2 style="text-align: center;">SYSTEME DE GESTION DES SITES</h2>
-            <a href="{{ route('sites.create') }}" class="btn btn-primary">Ajouter un site</a>
+            <a href="{{ route('sites.create') }}" class="btn btn-primary">Ajouter un site</a><br>
             <table class="table table-bordered">
                 <tr>
                     <th>NOM DU SITE</th>

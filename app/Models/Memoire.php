@@ -19,7 +19,7 @@ class Memoire extends Model
         'encadreur',
         'note',
         'appreciation',
-        'promotion',
+        'id_promotion',
     ];
 
     /**
@@ -37,4 +37,5 @@ class Memoire extends Model
     {
         return $this->belongsTo(Filiere::class, 'id_filiere');
     }
+    
 }

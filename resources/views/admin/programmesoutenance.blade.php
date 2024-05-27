@@ -11,7 +11,7 @@
                 <label for="filiere_id">Filière</label>
                 <select name="filiere_id" id="filiere_id" class="form-control">
                     @foreach ($filieres as $filiere)
-                        <option value="{{ $filiere->id }}">{{ $filiere->nom }}</option>
+                        <option value="{{ $filiere->id }}">{{ $filiere->filiere }}</option>
                     @endforeach
                 </select>
             </div>
@@ -37,7 +37,7 @@
                     @foreach ($memoires as $memoire)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $memoire->binome->etudiant1->nom }} et {{ $memoire->binome->etudiant2->nom }}</td>
+                            <td>{{ $memoire->binome->etudiant1->name  }} et {{ $memoire->binome->etudiant2->name  }}</td>
                             <td>{{ $memoire->titre }}</td>
                             <td>
                                 <input type="time" name="heure_soutenance_{{ $memoire->id }}" id="heure_soutenance_{{ $memoire->id }}" class="form-control">

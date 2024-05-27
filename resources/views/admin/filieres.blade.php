@@ -4,8 +4,8 @@
     <div class="row">
 
         <div class="col-md-9">
-            <h2 style="text-align: center;">SYSTEME DE GESTION DES filiereS</h2>
-            <a href="{{ route('filieres.create') }}" class="btn btn-primary">Ajouter un filiere</a>
+            <h2 style="text-align: center;">SYSTEME DE GESTION DES FILIERES</h2>
+            <a href="{{ route('filieres.create') }}" class="btn btn-primary">Ajouter un filiere</a><br>
             <table class="table table-bordered">
                 <tr>
                     <th>Nom des filieres</th>

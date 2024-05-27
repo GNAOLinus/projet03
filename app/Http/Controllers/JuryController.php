@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Filiere;
 use App\Models\Jury;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,7 +15,8 @@ class JuryController extends Controller
     public function index()
     {
         $juries = Jury::all();
-        return view('teacher.jurys', compact('juries'));
+        $filieres = Filiere::all();
+        return view('teacher.jurys', compact('juries','filieres'));
     }
 
     /**
@@ -22,8 +24,9 @@ class JuryController extends Controller
      */
     public function create()
     {
+        $filieres =Filiere::all();
         $enseignants = User::where('id_role', '3')->get();
-        return view('teacher.createjury', compact('enseignants'));
+        return view('teacher.createjury', compact('enseignants','filieres'));
     }
 
     /**
@@ -33,16 +36,18 @@ class JuryController extends Controller
     {
         // Validation des données du formulaire
         $request->validate([
-            'enseignant1' => 'required|exists:users,id',
-            'enseignant2' => 'required|exists:users,id',
-            'enseignant3' => 'required|exists:users,id',
+            'id_enseignant1' => 'required|exists:users,id',
+            'id_enseignant2' => 'required|exists:users,id',
+            'id_enseignant3' => 'required|exists:users,id',
+            'id_filiere' => 'required|exists:filieres,id',
         ]);
 
         // Création d'un nouveau jury
         $jury = new Jury();
-        $jury->id_enseignant1 = $request->enseignant1;
-        $jury->id_enseignant2 = $request->enseignant2;
-        $jury->id_enseignant3 = $request->enseignant3;
+        $jury->id_enseignant1 = $request->id_enseignant1;
+        $jury->id_enseignant2 = $request->id_enseignant2;
+        $jury->id_enseignant3 = $request->id_enseignant3;
+        $jury->id_filiere= $request->id_filiere;
         $jury->save();
 
         return redirect()->route('juries.index')->with('success', 'Jury créé avec succès');
@@ -51,28 +56,33 @@ class JuryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Jury $jury)
+    public function edit($id)
     {
-        $enseignants = User::where('role', 'enseignant')->get();
-        return view('teacher.createjury', compact('jury', 'enseignants'));
+        $jury = Jury::findOrFail($id);
+        $filieres = Filiere::all();
+        $enseignants = User::where('id_role', '3')->get();
+        return view('teacher.createjury', compact('jury', 'filieres', 'enseignants'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Jury $jury)
+    public function update(Request $request, $id)
     {
         // Validation des données du formulaire
         $request->validate([
-            'enseignant1' => 'required|exists:users,id',
-            'enseignant2' => 'required|exists:users,id',
-            'enseignant3' => 'required|exists:users,id',
+            'id_enseignant1' => 'required|exists:users,id',
+            'id_enseignant2' => 'required|exists:users,id',
+            'id_enseignant3' => 'required|exists:users,id',
+            'id_filiere' => 'required|exists:filieres,id',
         ]);
 
         // Mise à jour des informations du jury
-        $jury->id_enseignant1 = $request->enseignant1;
-        $jury->id_enseignant2 = $request->enseignant2;
-        $jury->id_enseignant3 = $request->enseignant3;
+        $jury = Jury::findOrFail($id);
+        $jury->id_enseignant1 = $request->id_enseignant1;
+        $jury->id_enseignant2 = $request->id_enseignant2;
+        $jury->id_enseignant3 = $request->id_enseignant3;
+        $jury->id_filiere = $request->id_filiere;
         $jury->save();
 
         return redirect()->route('juries.index')->with('success', 'Jury mis à jour avec succès');

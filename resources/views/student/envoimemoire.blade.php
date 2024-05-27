@@ -40,7 +40,12 @@
 
     <div class="form-group">
       <label for="promotion">Promotion</label>
-      <input type="text" name="promotion" id="promotion" class="form-control" required value="{{ $memoire->promotion ?? '' }}">
+      <select name="id_promotion" id="promotion" class="form-control" required value="{{ $memoire->promotion ?? '' }}">
+      <option value="">choisir une promotion</option>
+      @foreach ($promotions as $promotion)
+          <option value="{{$promotion->id}}">{{$promotion->promotion}}</option>
+      @endforeach
+      </select>
     </div><br><br>
 
     <input type="hidden" name="statut" value="privé"> 

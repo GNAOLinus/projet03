@@ -30,8 +30,7 @@
                     <td>{{ $binome->etudiant1->name . ' & ' . $binome->etudiant2->name }}</td>
                     <td>{{ $binome->filiere->filiere }}</td>
                     <td>
-                        <a href="{{ route('binomes.edit',['binome' => $binome->id_binome]) }}" class="btn btn-primary">Modifier</a>
-                        <form action="{{ route('binomes.destroy', ['binome' => $binome->id_binome]) }}" method="POST">
+                        <form action="{{ route('binomes.destroy', ['binome' => $binome->id]) }}" method="POST">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">Supprimer</button>

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Filiere;
 use App\Models\Memoire;
+use App\Models\promotion;
 use Illuminate\Http\Request;
 
 class RechercheController extends Controller
@@ -12,8 +13,7 @@ class RechercheController extends Controller
         $filieres = Filiere::all();
         $memoires = Memoire::orderBy('created_at', 'desc')->paginate(25);
 
-        // Assuming you have a way to get distinct promotions from your memoires
-        $promotions = Memoire::select('promotion')->distinct()->get()->pluck('promotion');
+        $promotions = promotion::all();
 
         return view('filtre', compact('memoires', 'filieres', 'promotions'));
     }
@@ -23,7 +23,7 @@ class RechercheController extends Controller
         // Récupérer les données du formulaire
         $titre = $request->input('titre');
         $auteur = $request->input('auteur');
-        $promotion = $request->input('promotion');
+        $promotion = $request->input('id_promotion');
         $filiere = $request->input('filiere');
 
         // Construire la requête en fonction des paramètres fournis
@@ -46,17 +46,17 @@ class RechercheController extends Controller
         }
 
         if ($promotion) {
-            $query->where('promotion', $promotion);
+            $query->where('id_promotion', $promotion);
         }
 
         if ($filiere) {
-            $query->where('filiere', $filiere);
+            $query->where('id_filiere', $filiere);
         }
 
         // Exécuter la requête
         $memoires = $query->orderBy('created_at', 'desc')->paginate(25);
         $filieres = Filiere::all();
-        $promotions = Memoire::select('promotion')->distinct()->get()->pluck('promotion');
+        $promotions = promotion::all();
 
         // Retourner la vue avec les résultats de la recherche
         return view('filtre', compact('memoires', 'filieres', 'promotions'));
@@ -74,13 +74,13 @@ class RechercheController extends Controller
             ->orWhereHas('binome.etudiant2', function($q) use ($query) {
                 $q->where('name', 'like', '%' . $query . '%');
             })
-            ->orWhere('promotion', 'like', '%' . $query . '%')
+            ->orWhere('id_promotion', 'like', '%' . $query . '%')
             ->orWhere('note', 'like', '%' . $query . '%')
             ->orderBy('created_at', 'desc')
             ->paginate(25);
 
         $filieres = Filiere::all();
-        $promotions = Memoire::distinct()->pluck('promotion');
+        $promotions = promotion::all();
 
         return view('filtre', compact('memoires', 'filieres', 'promotions'));
     }

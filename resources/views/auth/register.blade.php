@@ -1,7 +1,16 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
-
+        <!-- Display general errors -->
+        @if ($errors->any())
+        <div class="alert alert-danger mt-4">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
         <!-- Name -->
         <div>
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="Nom" />
@@ -36,8 +45,7 @@
         <div id="student">
             <!-- Contenu de la section student -->
             <!-- Site -->
-            <div class="form-group">
-                <label for="site">Site</label>
+            <div class="mt-4">
                 <select name="id_site" id="site" class="form-control">
                     <option value="#">- Sélectionnez un site de ESM -</option>
                     @foreach($sites as $site)
@@ -47,7 +55,6 @@
             </div>
             <!-- Filière -->
             <div class="mt-4">
-                <label for="filiere">Filière</label>
                 <select name="id_filiere" id="filiere" class="form-control">
                     <option value="">- Sélectionnez une filière -</option>
                     @foreach($filieres as $filiere)
@@ -60,6 +67,11 @@
                     </span>
                 @enderror
             </div>
+            <!-- Matricule -->
+            <div class="mt-4">
+                <x-text-input id="matricule" class="block mt-1 w-full" type="text" name="matricule" :value="old('matricule')" required autofocus autocomplete="matricule" placeholder="Votre Matricule" />
+                <x-input-error :messages="$errors->get('matricule')" class="mt-2" />
+            </div>
         </div>
         
             </div>
@@ -68,6 +80,7 @@
         <div class="from-group">
             <input type="hidden" name="id_promotion" value="{{ $promotion }}">
             <input type="hidden" name="id_role" value="{{ $role }}">
+            <input type="hidden" name="encryptedData" value="{{ $encryptedData }}">
         </div>
 
         <div class="flex items-center justify-end mt-4">

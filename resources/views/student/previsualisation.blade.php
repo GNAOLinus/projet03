@@ -34,7 +34,7 @@
                         <p class="card-text"><strong>Réaliser par : </strong>{{ $memoire->binome->etudiant1->name }} & {{ $memoire->binome->etudiant2->name }}</p>
                         
                         <!-- Affichage des informations sur la soutenance -->
-                    @if(isset($memoire->soutenance))
+                    @if(isset($soutenance))
                     <p>Soutenu le  : {{ $soutenance->date_soutenance }} à {{ $soutenance->site->site }}</p>
                     <!-- Ajoutez d'autres informations sur la soutenance si nécessaire -->
                     @endif
@@ -48,7 +48,7 @@
                         <script
                             src="https://checkout.fedapay.com/js/checkout.js"
                             data-public-key="pk_live_LJ5uKvznLx7VqDqETT-jmut4"
-                            data-button-text="Payer 500"
+                            data-button-text="Payer 500 frans CFA"
                             data-button-class="btn btn-primary"
                             data-transaction-amount="500"
                             data-transaction-description="Description de la transaction"
@@ -79,7 +79,7 @@
             <div class="col-md-1"></div>
         </div>
     </div>
-
+    
     <script>
        function handleFedapayError(event, error) {
     console.error('Fedapay Error:', error);

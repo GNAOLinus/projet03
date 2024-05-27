@@ -21,10 +21,10 @@
                 <div class="row mt-4">
                     <div class="form-group col-md-6">
                         <label for="annee">Promotion</label>
-                        <select name="promotion" class="form-control">
+                        <select name="id_promotion" class="form-control">
                             <option value="">Toutes les promotions</option>
                             @foreach($promotions as $promotion)
-                            <option value="{{ $promotion }}" >{{ $promotion }}</option>
+                            <option value="{{ $promotion->id}}" >{{ $promotion->promotion }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -53,6 +53,7 @@
     <div class="alert alert-danger" role="alert">
         <x-info></x-info>
     </div>
+    {{$memoires=$memoires}}
     <div class="row">
         @foreach($memoires as $memoire)
         @if($memoire->statut === 'public')
@@ -69,7 +70,7 @@
                     <p>Appréciation : {{ $memoire->appreciation }}</p>
                     <p>Note : {{ $memoire->note }}</p>
                     
-                    <a href="{{ route('memoires.previsualiser', ['memoire' => $memoire]) }}" class="btn btn-primary">Prévisualiser </a>
+                    <a href="{{ route('memoires.previsualiser', ['memoire' => $memoire,'memoires'=> $memoires]) }}" class="btn btn-primary">Prévisualiser </a>
                 </div>
             </div>
         </div>
