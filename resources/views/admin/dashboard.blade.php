@@ -19,6 +19,9 @@
                         <li class="list-group-item">
                             <a href="{{route('memoire.allmemoire',['page'=>'no'])}}" class="btn btn-primary">Liste des mémoires</a>
                         </li>
+                        <li class="list-group-item">
+                            <a href="{{route('preinscription')}}" class="btn btn-primary">Pré inscription des etudiants </a>
+                        </li>
                     </ul>
                 </div>
             </div>

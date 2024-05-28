@@ -3,6 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Database\Factories\AdminFactory;
+use Database\Factories\AdminfactoryFactory;
+use Database\Factories\FiliereFactory;
+use Database\Factories\PromotionFactory;
+use Database\Factories\RoleFactory;
+use Database\Factories\SiteFactory;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,11 +19,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            RoleSeeder::class,
+            FiliereSeeder::class,
+            PromotionSeeder::class,
+            SiteSeeder::class,
+            AdminSeeder::class,
         ]);
+       
     }
 }

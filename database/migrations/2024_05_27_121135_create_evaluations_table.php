@@ -25,6 +25,11 @@ return new class extends Migration
             $table->integer('note_rapport3');
             $table->integer('note_rapport4');
             $table->integer('note_rapport5');
+            $table->longText('justification_rapport1');
+            $table->longText('justification_rapport2');
+            $table->longText('justification_rapport3');
+            $table->longText('justification_rapport4');
+            $table->longText('justification_rapport5');
         });
     }
 

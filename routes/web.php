@@ -8,6 +8,7 @@ use App\Http\Controllers\filiereController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\JuryController;
 use App\Http\Controllers\MemoireController;
+use App\Http\Controllers\PreinscriptionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\recherchecontroller;
@@ -46,8 +47,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
     });
 
         Route::resource('sites', SiteController::class);
@@ -73,7 +72,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('memoire/all/{page}', [MemoireController::class, 'voire'])->name('memoire.allmemoire');
         Route::post('/memoire/publier', [MemoireController::class,'publication'])->name('memoire.publier');
         Route::get('/memoire/publier/gestion',[MemoireController::class,'MemoirePublier'])->name('memoirepublier');
+        Route::post('/compare-memoires', [MemoireController::class, 'compareMemoires'])->name('compareMemoires');
 
+        Route::get('/preinscription', [PreinscriptionController::class, 'index'])->name('preinscription');
+        Route::post('/preinscription/formulaire', [PreinscriptionController::class, 'store'])->name('preinscription.store');
+        
         Route::resource('soutenances', SoutenanceController::class);
         Route::get('/soutenances/filiere/{id_filiere}', [SoutenanceController::class, 'getMemoiresByFiliere'])->name('soutenances.filiere');
         Route::get('/soutenances/binome/{id_binome}', [SoutenanceController::class, 'getBinomesByMemoire'])->name('soutenances.binome');

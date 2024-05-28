@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Binome;
+use App\Models\evaluation;
 use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
 use App\Models\Soutenance;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 
 class MemoireController extends Controller
 {
@@ -53,7 +55,8 @@ class MemoireController extends Controller
         $this->uploadMemoireFile($memoire, $request);
 
         $memoire->save();
-
+        // Appeler la fonction compare avec le mémoire nouvellement créé
+        $this->compare($memoire);
         return redirect()->route('memoire.index')->with('success', 'Memoire created successfully.');
     }
 
@@ -192,5 +195,98 @@ class MemoireController extends Controller
             $memoire->fichier = $filename;
         }
     }
+
+    function compareMemoires($titre1, $resume1, $titre2, $resume2) {
+        $apiKey = 'YOUR_OPENAI_API_KEY'; // Remplacez par votre clé API OpenAI
+        $client = new Client();
     
+        $query = "Compare these two theses based on their titles and summaries. Score their similarity on a scale from 0 to 10, where 0 means completely different and 10 means almost identical. Consider the following aspects: semantic meaning, main themes, concepts and ideas, vocabulary and terminology, and structure and organization. Provide a brief explanation for the score.
+        Thesis 1:
+        Title: $titre1
+        Summary: $resume1
+    
+        Thesis 2:
+        Title: $titre2
+        Summary: $resume2";
+    
+        $response = $client->post('https://api.openai.com/v1/engines/davinci-codex/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'prompt' => $query,
+                'max_tokens' => 150,
+                'temperature' => 0.5,
+            ],
+        ]);
+    
+        $body = $response->getBody();
+        $data = json_decode($body, true);
+    
+        $resultText = $data['choices'][0]['text'];
+    
+        // Analyser le texte pour extraire la note et la justification
+        preg_match('/Similarity Score: (\d+)\/10/', $resultText, $matches);
+        $score = $matches[1];
+        $justification = trim(str_replace('Similarity Score: ' . $score . '/10', '', $resultText));
+    
+        return [
+            'score' => $score,
+            'justification' => $justification,
+        ];
+    }
+    
+    public function compare($memoire1) {
+        // Récupérer tous les mémoires de la même filière pour la comparaison
+        $memoires = Memoire::where('id_filere', $memoire1->id_filiere)->get();
+        $results = [];
+    
+        // Vérifier si des mémoires de la même filière ont été trouvés
+        if ($memoires->isNotEmpty()) {
+            $titre1 = $memoire1->titre;
+            $resume1 = $memoire1->resume;
+    
+            foreach ($memoires as $memoire2) {
+                // Extraire le titre et le résumé du deuxième mémoire
+                $titre2 = $memoire2->titre;
+                $resume2 = $memoire2->resume;
+    
+                // Comparer les deux mémoires
+                $similarityScore = $this->compareMemoires($titre1, $resume1, $titre2, $resume2);
+    
+                // Stocker le résultat de la comparaison
+                $results[] = [
+                    'memoire1' => $memoire1,
+                    'memoire2' => $memoire2,
+                    'similarity_score' => $similarityScore,
+                ];
+            }
+    
+            // Trier les résultats par score de similarité en ordre décroissant
+        usort($results, function ($a, $b) {
+            return $b['similarity_score']['score'] <=> $a['similarity_score']['score'];
+        });
+
+        // Récupérer les 5 premières meilleures évaluations
+        $topResults = array_slice($results, 0, 5);
+        $evaluation = new evaluation();
+        $evaluation->id_memoire = $memoire1->id;
+        $i=1;
+        // Enregistrer les 5 meilleures évaluations dans la base de données
+        foreach ($topResults as $result) {
+            $evaluation->id_rapport = $result['memoire2']->id;
+            $evaluation->setAttribute('note_rapport' . $i, $result['similarity_score']['score']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
+            $evaluation->setAttribute('justification_rapport' . $i, $result['similarity_score']['justification']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
+            $i++;
+        }
+        $evaluation->save();
+
+        // Redirection ou autre logique ici si nécessaire
+
+    } else {
+        // Si aucun mémoire de la même filière n'est trouvé, retourner une erreur ou un message approprié
+        return back()->withErrors(['message' => 'Aucun mémoire de la même filière trouvé pour la comparaison.']);
+    }
+}
 }
