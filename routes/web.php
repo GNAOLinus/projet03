@@ -72,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('memoire/all/{page}', [MemoireController::class, 'voire'])->name('memoire.allmemoire');
         Route::post('/memoire/publier', [MemoireController::class,'publication'])->name('memoire.publier');
         Route::get('/memoire/publier/gestion',[MemoireController::class,'MemoirePublier'])->name('memoirepublier');
-        Route::post('/compare-memoires', [MemoireController::class, 'compareMemoires'])->name('compareMemoires');
+        Route::get('/compare-memoire/{id}', [MemoireController::class, 'compare']);
 
         Route::get('/preinscription', [PreinscriptionController::class, 'index'])->name('preinscription');
         Route::post('/preinscription/formulaire', [PreinscriptionController::class, 'store'])->name('preinscription.store');

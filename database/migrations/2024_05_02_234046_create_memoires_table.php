@@ -20,10 +20,10 @@ class CreateMemoiresTable extends Migration
             $table->string('fichier');
             $table->string('statut')->nullable();
             $table->string('appreciation')->nullable();
-            $table->string('note')->nullable();
+            $table->integer('note')->nullable();
             $table->unsignedBigInteger('id_filiere');
             $table->unsignedBigInteger('id_binome');
-
+            $table->string('encadreur');
             $table->foreign('id_binome')->references('id')->on('binomes');
             $table->foreign('id_filiere')->references('id')->on('filieres');
             

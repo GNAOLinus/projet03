@@ -8,6 +8,7 @@ use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
 use App\Models\Soutenance;
+use App\Services\OpenAIService;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
@@ -69,7 +70,8 @@ class MemoireController extends Controller
         return view('student.envoimemoire', compact('memoire', 'binome','promotions'));
     }
     
-
+/* la fonction se base sur les fonction de validation des donnée , de liaison des donné au champ des table  
+et a la fonction de sauvegarde des document */
     public function update(Request $request, Memoire $memoire)
     {
         $this->validateMemoire($request);
@@ -87,7 +89,8 @@ class MemoireController extends Controller
         $memoire->delete();
         return redirect()->route('memoire.index')->with('success', 'Memoire deleted successfully.');
     }
-
+    
+//elle permet de mettre ajours les appréciation donner par les jury
     public function updateAppreciation(Request $request, $id)
     {
         // Trouver le mémoire correspondant
@@ -106,7 +109,7 @@ class MemoireController extends Controller
         return redirect()->back()->with('success', 'Appréciation enregistrée avec succès.');
     }
     
-
+//grace a cett fonction on peut voir les memoire et avoir plus de détail avant le télchagement
     public function previsualiser($memoire)
     {
         $memoire = Memoire::findOrFail($memoire);
@@ -114,6 +117,7 @@ class MemoireController extends Controller
         return view('student.previsualisation', compact('memoire','soutenance'));
     }
 
+// c'est la fonction qui permet au visiteur de télécharger les documment
     public function download($id)
     {
         $memoire = Memoire::findOrFail($id);
@@ -126,6 +130,7 @@ class MemoireController extends Controller
         return response()->download($filePath, $memoire->fichier);
     }
 
+// elle permet de valider les donnée envoyer depuis le formulaire
     protected function validateMemoire(Request $request)
     {
         $request->validate([
@@ -139,6 +144,7 @@ class MemoireController extends Controller
             'statut'=>'string',
         ]);
     }
+    // fonction pour la publication des memoire elle change le statu à public
     public function publication(Request $request)
     {
         // Vérifier si le formulaire a été soumis
@@ -156,18 +162,21 @@ class MemoireController extends Controller
             return redirect()->back()->with('error', 'Une erreur s\'est produite. Veuillez réessayer.');
         }
     }
+    // elle permet de voir tous les memoire
     public function show(Request $request)
     {
         $memoires=Memoire::all();
         return view('student.indexmemoire', compact('memoires'));
     }
+
+
     public function voire($page)
     {
         $memoires=Memoire::all();
         
         return view('student.indexmemoire', compact('memoires','page'));
     }
-
+//elle permet de voir les memoires publier c'est a dire ceux qui ont la champ statut a public
     public function MemoirePublier()
     {
         $memoires = Memoire::where('statut', 'public')->get();
@@ -175,6 +184,7 @@ class MemoireController extends Controller
         return view('admin.gestionmemoire', compact('memoires','filieres'));
     }
     
+    // elle permet de relier les champs de la base deonner a champs du formulaire
 
     protected function fillMemoireFromRequest(Memoire $memoire, Request $request)
     {
@@ -185,7 +195,7 @@ class MemoireController extends Controller
         $memoire->id_filiere = $request->id_filiere;
         $memoire->id_binome = $request->id_binome;
     }
-
+// elle permet de stocker les memoire dans le dossier public/memoires
     protected function uploadMemoireFile(Memoire $memoire, Request $request)
     {
         if ($request->hasFile('fichier')) {
@@ -196,97 +206,70 @@ class MemoireController extends Controller
         }
     }
 
-    function compareMemoires($titre1, $resume1, $titre2, $resume2) {
-        $apiKey = 'YOUR_OPENAI_API_KEY'; // Remplacez par votre clé API OpenAI
-        $client = new Client();
-    
-        $query = "Compare these two theses based on their titles and summaries. Score their similarity on a scale from 0 to 10, where 0 means completely different and 10 means almost identical. Consider the following aspects: semantic meaning, main themes, concepts and ideas, vocabulary and terminology, and structure and organization. Provide a brief explanation for the score.
-        Thesis 1:
-        Title: $titre1
-        Summary: $resume1
-    
-        Thesis 2:
-        Title: $titre2
-        Summary: $resume2";
-    
-        $response = $client->post('https://api.openai.com/v1/engines/davinci-codex/completions', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $apiKey,
-                'Content-Type' => 'application/json',
-            ],
-            'json' => [
-                'prompt' => $query,
-                'max_tokens' => 150,
-                'temperature' => 0.5,
-            ],
-        ]);
-    
-        $body = $response->getBody();
-        $data = json_decode($body, true);
-    
-        $resultText = $data['choices'][0]['text'];
-    
-        // Analyser le texte pour extraire la note et la justification
-        preg_match('/Similarity Score: (\d+)\/10/', $resultText, $matches);
-        $score = $matches[1];
-        $justification = trim(str_replace('Similarity Score: ' . $score . '/10', '', $resultText));
-    
-        return [
-            'score' => $score,
-            'justification' => $justification,
-        ];
+    protected $openAIService;
+
+    public function __construct(OpenAIService $openAIService)
+    {
+        $this->openAIService = $openAIService;
     }
-    
-    public function compare($memoire1) {
-        // Récupérer tous les mémoires de la même filière pour la comparaison
-        $memoires = Memoire::where('id_filere', $memoire1->id_filiere)->get();
-        $results = [];
-    
-        // Vérifier si des mémoires de la même filière ont été trouvés
-        if ($memoires->isNotEmpty()) {
-            $titre1 = $memoire1->titre;
-            $resume1 = $memoire1->resume;
-    
-            foreach ($memoires as $memoire2) {
-                // Extraire le titre et le résumé du deuxième mémoire
-                $titre2 = $memoire2->titre;
-                $resume2 = $memoire2->resume;
-    
-                // Comparer les deux mémoires
-                $similarityScore = $this->compareMemoires($titre1, $resume1, $titre2, $resume2);
-    
-                // Stocker le résultat de la comparaison
-                $results[] = [
-                    'memoire1' => $memoire1,
-                    'memoire2' => $memoire2,
-                    'similarity_score' => $similarityScore,
-                ];
+// elle se base sur une api de gtp open ai pour comparer deux memoire et donne une note sur 10
+public function compare($id)
+{
+    $memoire1 = Memoire::findOrFail($id);
+
+    // Récupérer tous les mémoires de la même filière pour la comparaison
+    $memoires = Memoire::where('id_filiere', $memoire1->id_filiere)->get();
+    $results = [];
+
+    // Vérifier si des mémoires de la même filière ont été trouvés
+    if ($memoires->isNotEmpty()) {
+        $titre1 = $memoire1->titre;
+        $resume1 = $memoire1->resume;
+
+        foreach ($memoires as $memoire2) {
+            // Ne pas comparer le mémoire à lui-même
+            if ($memoire1->id === $memoire2->id) {
+                continue;
             }
-    
-            // Trier les résultats par score de similarité en ordre décroissant
+
+            // Extraire le titre et le résumé du deuxième mémoire
+            $titre2 = $memoire2->titre;
+            $resume2 = $memoire2->resume;
+
+            // Comparer les deux mémoires
+            $similarityScore = $this->openAIService->compareMemoires($titre1, $resume1, $titre2, $resume2);
+
+            // Stocker le résultat de la comparaison
+            $results[] = [
+                'memoire1' => $memoire1,
+                'memoire2' => $memoire2,
+                'similarity_score' => $similarityScore,
+            ];
+        }
+
+        // Trier les résultats par score de similarité en ordre décroissant
         usort($results, function ($a, $b) {
             return $b['similarity_score']['score'] <=> $a['similarity_score']['score'];
         });
 
         // Récupérer les 5 premières meilleures évaluations
         $topResults = array_slice($results, 0, 5);
-        $evaluation = new evaluation();
-        $evaluation->id_memoire = $memoire1->id;
-        $i=1;
+
         // Enregistrer les 5 meilleures évaluations dans la base de données
-        foreach ($topResults as $result) {
+        foreach ($topResults as $i => $result) {
+            $evaluation = new Evaluation();
+            $evaluation->id_memoire = $memoire1->id;
             $evaluation->id_rapport = $result['memoire2']->id;
-            $evaluation->setAttribute('note_rapport' . $i, $result['similarity_score']['score']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
-            $evaluation->setAttribute('justification_rapport' . $i, $result['similarity_score']['justification']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
-            $i++;
+            $evaluation->setAttribute('note_rapport' . ($i + 1), $result['similarity_score']['score']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
+            $evaluation->setAttribute('justification_rapport' . ($i + 1), $result['similarity_score']['justification']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
+            $evaluation->save();
         }
-        $evaluation->save();
 
-        // Redirection ou autre logique ici si nécessaire
-
+        return response()->json($topResults);
     } else {
         // Si aucun mémoire de la même filière n'est trouvé, retourner une erreur ou un message approprié
         return back()->withErrors(['message' => 'Aucun mémoire de la même filière trouvé pour la comparaison.']);
     }
 }
+
 }
