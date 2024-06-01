@@ -62,6 +62,7 @@ class RegisteredUserController extends Controller
         'id_filiere' => ['required', 'integer', 'exists:filieres,id'],
         'id_promotion' => ['required', 'integer', 'exists:promotions,id'],
         'matricule' => ['sometimes', 'integer'],
+        'phone' => ['sometimes', 'string'],
         'encryptedData' => ['required', 'string'],
     ]);
 
@@ -86,6 +87,7 @@ class RegisteredUserController extends Controller
                 'id_site' => $request->id_site,
                 'id_filiere' => $request->id_filiere,
                 'id_promotion' => $request->id_promotion,
+                'phone' => $request->phone,
             ]);
 
             event(new Registered($user));

@@ -13,4 +13,16 @@ class Etudiant extends Model
     {
         return $this->belongsTo(Etudiant::class, 'id_binome');
     }
+    public function filiere()
+    {
+        return $this->belongsTo(Filiere::class, 'id_filiere');
+    }
+    public function promotion()
+    {
+        return $this->belongsTo(promotion::class, 'id_promotion');
+    }
+    public function site()
+    {
+        return $this->belongsTo(site::class, 'id_site');
+    }
 }

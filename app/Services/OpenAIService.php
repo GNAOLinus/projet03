@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Services;
 
 use OpenAI;
-use OpenAI\Client;
+use Exception;
 
 class OpenAIService
 {
@@ -26,25 +25,32 @@ class OpenAIService
         Title: $titre2
         Summary: $resume2";
 
-        $response = $this->client->chat()->create([
-            'model' => 'gpt-3.5-turbo-instruct',
-            'messages' => [
-                ['role' => 'user', 'content' => $query],
-            ],
-            'max_tokens' => 100,
-            'temperature' => 0.5,
-        ]);
+        try {
+            $response = $this->client->chat()->create([
+                'model' => 'gpt-4o-2024-05-13',
+                'messages' => [
+                    ['role' => 'user', 'content' => $query],
+                ],
+                'max_tokens' => 100,
+                'temperature' => 0.5,
+            ]);
 
-        $resultText = $response['choices'][0]['message']['content'];
+            $resultText = $response['choices'][0]['message']['content'];
 
-        // Analyser le texte pour extraire la note et la justification
-        preg_match('/Similarity Score: (\d+)\/10/', $resultText, $matches);
-        $score = isset($matches[1]) ? $matches[1] : 'N/A';
-        $justification = trim(str_replace("Similarity Score: $score/10", '', $resultText));
+            // Analyser le texte pour extraire la note et la justification
+            preg_match('/Similarity Score: (\d+)\/10/', $resultText, $matches);
+            $score = isset($matches[1]) ? $matches[1] : 'N/A';
+            $justification = trim(str_replace("Similarity Score: $score/10", '', $resultText));
 
-        return [
-            'score' => $score,
-            'justification' => $justification,
-        ];
+            return [
+                'score' => $score,
+                'justification' => $justification,
+            ];
+        } catch (Exception $e) {
+            // Gérer les erreurs, y compris les erreurs de quota
+            return [
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ];
+        }
     }
 }

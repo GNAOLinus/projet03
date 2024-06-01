@@ -25,6 +25,10 @@ class DatabaseSeeder extends Seeder
             PromotionSeeder::class,
             SiteSeeder::class,
             AdminSeeder::class,
+            InfoEtudiantSeeder::class,
+            UserSeeder::class,
+            BinomeSeeder::class,
+            MemoireSeeder::class,
         ]);
        
     }

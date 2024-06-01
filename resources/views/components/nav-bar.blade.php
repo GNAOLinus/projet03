@@ -20,6 +20,7 @@
         </li>
       </ul>
       <form class="d-flex" action="{{ route('recherche') }}" method="GET">
+        @csrf
         <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search" value="{{ request('query') }}">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>

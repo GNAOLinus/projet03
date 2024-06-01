@@ -61,7 +61,8 @@
             <div class="card">
                 <div class="card-head">
                     <div class="alert alert-success">
-                        Mémoire {{ $memoire->id_memoire }} promotion: {{ $memoire->promotion }}
+                        filiere: {{ $memoire->filiere->filiere }} 
+                        <p>promotion: {{ $memoire->promotion->promotion }}</p>
                     </div>
                 </div>
                 <div class="card-body">

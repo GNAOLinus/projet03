@@ -41,6 +41,13 @@
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
+        <div class="mt-4">
+            <x-text-input id="phone" class="block mt-1 w-full"
+                            type="text"
+                            name="phone" required autocomplete="phone" placeholder="numero de telephone" />
+
+            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+        </div>
         @if($role == 2)
         <div id="student">
             <!-- Contenu de la section student -->

@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return view('welcome'); });
 Route::get('/register/{vi}', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/profile/plus', [UserController::class, 'profile'])->name('profile');
 
 
 Route::prefix('/recherche')->group(function(){
@@ -58,11 +59,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/etudiants', [EtudiantController::class, 'index'])->name('etudiants.index');
         Route::post('/etudiants/send-invitation', [InvitationController::class, 'sendInvitation'])->name('envoyer_invitation');
         Route::post('/etudiants/confirm-invitation', [InvitationController::class, 'confirmInvitation'])->name('confirmer_invitation');
+        Route::post('/etudiants/annuler', [InvitationController::class, 'destroy'])->name('annlerinvitation');
 
 
         Route::resource('juries', JuryController::class);
         Route::get('/enseigant/ ', [TeacherController::class,'getteacher']);
         Route::get('user', [UserController::class, 'index'])->name('users');
+        Route::get('/recherche/etudiant', [UserController::class, 'search'])->name('etudiant.recherche');
+        Route::get('/recherche', [UserController::class, 'searchuser'])->name('user.recherche');
+
         Route::post('/promotion',[PromotionController::class,'store'])->name('promotion.store');
 
         Route::put('/memoires/{id}/appreciation', [MemoireController::class, 'updateAppreciation'])->name('memoires.updateAppreciation');

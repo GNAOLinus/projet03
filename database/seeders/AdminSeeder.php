@@ -15,6 +15,7 @@ class AdminSeeder extends Seeder
             'name' => 'Admin de base',
             'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
+            'phone' => fake()->unique()->phoneNumber(),
             'password' => Hash::make('123456789'),
             'id_role' => 1, // Assuming '1' corresponds to the 'admin' role in your roles table
             'remember_token' => Str::random(10),

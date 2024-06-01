@@ -31,7 +31,21 @@
                         <p class="card-text">{{ $memoire->resume }}</p>
                         <p class="card-text"><strong>Appréciation : </strong>{{ $memoire->appreciation }}</p>
                         <p class="card-text"><strong>Note : </strong>{{ $memoire->note }}</p>
-                        <p class="card-text"><strong>Réaliser par : </strong>{{ $memoire->binome->etudiant1->name }} & {{ $memoire->binome->etudiant2->name }}</p>
+                        <p class="card-text">
+                            <strong>Réalisé par :</strong>
+                            <form action="{{ route('profile') }}" method="post" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $memoire->binome->etudiant1->id }}">
+                                <button class="btn btn-link p-0 m-0 align-baseline">{{ $memoire->binome->etudiant1->name }}</button>
+                            </form>
+                            et par son binôme
+                            <form action="{{ route('profile') }}" method="post" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $memoire->binome->etudiant2->id }}">
+                                <button class="btn btn-link p-0 m-0 align-baseline">{{ $memoire->binome->etudiant2->name }}</button>
+                            </form>
+                        </p>
+
                         
                         <!-- Affichage des informations sur la soutenance -->
                     @if(isset($soutenance))

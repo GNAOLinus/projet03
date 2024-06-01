@@ -50,7 +50,7 @@ class InvitationController extends Controller
         ]);
 
         // Rediriger avec un message de succès
-        return back()->with('success', 'Invitation envoyée avec succès.');
+        return redirect()->route('etudiants.index')->with('success', 'Invitation envoyée avec succès.');
     }
 
     public function confirmInvitation(Request $request)
@@ -74,6 +74,13 @@ class InvitationController extends Controller
     
         // Rediriger avec un message de succès
         return redirect()->route('etudiants.index');
+    }
+
+    public function destroy(Invitations $invitation)
+    {
+        //$invitation->delete();
+    return response()->json($invitation);
+        //return redirect()->route('etudiants.index')->with('success', 'filiere supprimé avec succès');
     }
     
 }

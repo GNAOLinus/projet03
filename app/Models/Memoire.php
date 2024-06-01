@@ -37,5 +37,9 @@ class Memoire extends Model
     {
         return $this->belongsTo(Filiere::class, 'id_filiere');
     }
+    public function promotion()
+    {
+        return $this->belongsTo(promotion::class, 'id_promotion');
+    }
     
 }

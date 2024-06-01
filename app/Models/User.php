@@ -28,8 +28,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'id_site',
         'id_filiere',
         'id_promotion',
+        'phone',
     ];
-
+    public function filiere()
+    {
+        return $this->belongsTo(Filiere::class, 'id_filiere');
+    }
+    public function promotion()
+    {
+        return $this->belongsTo(promotion::class, 'id_promotion');
+    }
+    public function site()
+    {
+        return $this->belongsTo(site::class, 'id_site');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

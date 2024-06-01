@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
+use App\Models\Site;
 use Illuminate\Http\Request;
 
 class RechercheController extends Controller
@@ -64,6 +65,8 @@ class RechercheController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
+        $filiere = Filiere::where('filiere','like', '%' . $query . '%')->pluck('id');
+        $site = Site::where('site','like', '%' . $query . '%')->orWhere('addresse', 'like', '%' . $query . '%')->pluck('id');
 
         $memoires = Memoire::query()
             ->where('titre', 'like', '%' . $query . '%')
@@ -76,8 +79,10 @@ class RechercheController extends Controller
             })
             ->orWhere('id_promotion', 'like', '%' . $query . '%')
             ->orWhere('note', 'like', '%' . $query . '%')
+            //->orwhere('id_filiere', $filiere)
+            //->orwhere('id_site', $site)
             ->orderBy('created_at', 'desc')
-            ->paginate(25);
+            ->paginate(24);
 
         $filieres = Filiere::all();
         $promotions = promotion::all();

@@ -10,7 +10,6 @@ use App\Models\promotion;
 use App\Models\Soutenance;
 use App\Services\OpenAIService;
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
 
 class MemoireController extends Controller
 {
@@ -57,7 +56,7 @@ class MemoireController extends Controller
 
         $memoire->save();
         // Appeler la fonction compare avec le mémoire nouvellement créé
-        $this->compare($memoire);
+       // $this->compare($memoire);
         return redirect()->route('memoire.index')->with('success', 'Memoire created successfully.');
     }
 
@@ -212,64 +211,70 @@ et a la fonction de sauvegarde des document */
     {
         $this->openAIService = $openAIService;
     }
-// elle se base sur une api de gtp open ai pour comparer deux memoire et donne une note sur 10
-public function compare($id)
-{
-    $memoire1 = Memoire::findOrFail($id);
 
-    // Récupérer tous les mémoires de la même filière pour la comparaison
-    $memoires = Memoire::where('id_filiere', $memoire1->id_filiere)->get();
-    $results = [];
+    // Elle se base sur une API de GPT OpenAI pour comparer deux mémoires et donner une note sur 10
+    public function compare($id)
+    {
+        $memoire1 = Memoire::findOrFail($id);
 
-    // Vérifier si des mémoires de la même filière ont été trouvés
-    if ($memoires->isNotEmpty()) {
-        $titre1 = $memoire1->titre;
-        $resume1 = $memoire1->resume;
+        // Récupérer tous les mémoires de la même filière pour la comparaison
+        $memoires = Memoire::where('id_filiere', $memoire1->id_filiere)->get();
+        $results = [];
 
-        foreach ($memoires as $memoire2) {
-            // Ne pas comparer le mémoire à lui-même
-            if ($memoire1->id === $memoire2->id) {
-                continue;
+        // Vérifier si des mémoires de la même filière ont été trouvés
+        if ($memoires->isNotEmpty()) {
+            $titre1 = $memoire1->titre;
+            $resume1 = $memoire1->resume;
+
+            foreach ($memoires as $memoire2) {
+                // Ne pas comparer le mémoire à lui-même
+                if ($memoire1->id === $memoire2->id) {
+                    continue;
+                }
+
+                // Extraire le titre et le résumé du deuxième mémoire
+                $titre2 = $memoire2->titre;
+                $resume2 = $memoire2->resume;
+
+                // Comparer les deux mémoires
+                $similarityScore = $this->openAIService->compareMemoires($titre1, $resume1, $titre2, $resume2);
+
+                // Stocker le résultat de la comparaison
+                if (!isset($similarityScore['error'])) {
+                    $results[] = [
+                        'memoire1' => $memoire1,
+                        'memoire2' => $memoire2,
+                        'similarity_score' => $similarityScore,
+                    ];
+                } else {
+                    // Gérer l'erreur de comparaison
+                    return response()->json(['error' => $similarityScore['error']], 400);
+                }
             }
 
-            // Extraire le titre et le résumé du deuxième mémoire
-            $titre2 = $memoire2->titre;
-            $resume2 = $memoire2->resume;
+            // Trier les résultats par score de similarité en ordre décroissant
+            usort($results, function ($a, $b) {
+                return $b['similarity_score']['score'] <=> $a['similarity_score']['score'];
+            });
 
-            // Comparer les deux mémoires
-            $similarityScore = $this->openAIService->compareMemoires($titre1, $resume1, $titre2, $resume2);
+            // Récupérer les 5 premières meilleures évaluations
+            $topResults = array_slice($results, 0, 5);
 
-            // Stocker le résultat de la comparaison
-            $results[] = [
-                'memoire1' => $memoire1,
-                'memoire2' => $memoire2,
-                'similarity_score' => $similarityScore,
-            ];
+            // Enregistrer les 5 meilleures évaluations dans la base de données
+            foreach ($topResults as $i => $result) {
+                $evaluation = new Evaluation();
+                $evaluation->id_memoire = $memoire1->id;
+                $evaluation->id_rapport = $result['memoire2']->id;
+                $evaluation->setAttribute('note_rapport' . ($i + 1), $result['similarity_score']['score']);
+                $evaluation->setAttribute('justification_rapport' . ($i + 1), $result['similarity_score']['justification']);
+                $evaluation->save();
+            }
+
+            return response()->json($topResults);
+        } else {
+            // Si aucun mémoire de la même filière n'est trouvé, retourner une erreur ou un message approprié
+            return response()->json(['error' => 'Aucun mémoire de la même filière trouvé pour la comparaison.'], 404);
         }
-
-        // Trier les résultats par score de similarité en ordre décroissant
-        usort($results, function ($a, $b) {
-            return $b['similarity_score']['score'] <=> $a['similarity_score']['score'];
-        });
-
-        // Récupérer les 5 premières meilleures évaluations
-        $topResults = array_slice($results, 0, 5);
-
-        // Enregistrer les 5 meilleures évaluations dans la base de données
-        foreach ($topResults as $i => $result) {
-            $evaluation = new Evaluation();
-            $evaluation->id_memoire = $memoire1->id;
-            $evaluation->id_rapport = $result['memoire2']->id;
-            $evaluation->setAttribute('note_rapport' . ($i + 1), $result['similarity_score']['score']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
-            $evaluation->setAttribute('justification_rapport' . ($i + 1), $result['similarity_score']['justification']); // Utilisation de setAttribute pour définir dynamiquement le nom du champ
-            $evaluation->save();
-        }
-
-        return response()->json($topResults);
-    } else {
-        // Si aucun mémoire de la même filière n'est trouvé, retourner une erreur ou un message approprié
-        return back()->withErrors(['message' => 'Aucun mémoire de la même filière trouvé pour la comparaison.']);
     }
-}
 
 }
