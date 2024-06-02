@@ -99,11 +99,6 @@
        // Soumettre les données du formulaire pour programmer une soutenance
        async function soumettreMemoire(formData) {
         try {
-            // Afficher les données du FormData pour le débogage
-            console.log('FormData entries:');
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}: ${value}`);
-            }
             
             const response = await fetch("{{ route('soutenances.store') }}", {
                 method: 'POST',
@@ -138,6 +133,7 @@
         const form = document.getElementById('soutenance-form');
         const formData = new FormData(form);
         // Ajouter les valeurs de date et d'heure de début à formData
+        formData.append('heurs_soutenance', document.getElementById('heurs_soutenance').value);
         formData.append('date_soutenance', document.getElementById('date').value);
         formData.append('id_filiere', document.getElementById('id_filiere').value);
         formData.append('id_jury', document.getElementById('id_jury').value);

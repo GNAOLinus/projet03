@@ -8,6 +8,8 @@ use App\Models\Jury;
 use App\Models\Memoire;
 use App\Models\Site;
 use App\Models\Soutenance;
+use App\Models\User;
+use App\Notifications\SoutenanceProgramationNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -43,34 +45,55 @@ class SoutenanceController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'id_filiere' => 'required|exists:filieres,id',
-            'id_jury' => 'required|exists:juries,id',
-            'id_site' => 'required|exists:sites,id',
-            'date_soutenance' => 'required|date',
-            'heurs_soutenance' => 'required|date_format:H:i', // Format "HH:mm"
-            'id_memoire' => 'required|exists:memoires,id',
-        ]);
-    
-        try {
-            // Création d'une nouvelle instance de Soutenance
-            $soutenance = new Soutenance();
-            $soutenance->id_memoire = $validated['id_memoire'];
-            $soutenance->id_site = $validated['id_site'];
-            $soutenance->id_jury = $validated['id_jury'];
-            $soutenance->id_filiere = $validated['id_filiere'];
-            $soutenance->date_soutenance = $validated['date_soutenance'];
-            $soutenance->heurs_soutenance = $validated['heurs_soutenance'];
-            $soutenance->save(); // Enregistrement de la soutenance
-    
-            return response()->json(['message' => 'Soutenance programmée avec succès!']);
-        } catch (Exception $e) {
-            // En cas d'erreur, enregistrement de l'erreur dans le fichier de logs et retour d'une réponse JSON avec le message d'erreur
-            Log::error('Erreur lors de la programmation de la soutenance: ' . $e->getMessage());
-            return response()->json(['error' => 'Une erreur est survenue. Veuillez réessayer plus tard.'.$e], 500);
+{
+    $validated = $request->validate([
+        'id_filiere' => 'required|exists:filieres,id',
+        'id_jury' => 'required|exists:juries,id',
+        'id_site' => 'required|exists:sites,id',
+        'date_soutenance' => 'required|date',
+        'heurs_soutenance' => 'required|date_format:H:i', // Format "HH:mm"
+        'id_memoire' => 'required|exists:memoires,id',
+    ]);
+
+    try {
+        // Création d'une nouvelle instance de Soutenance
+        $soutenance = new Soutenance();
+        $soutenance->id_memoire = $validated['id_memoire'];
+        $soutenance->id_site = $validated['id_site'];
+        $soutenance->id_jury = $validated['id_jury'];
+        $soutenance->id_filiere = $validated['id_filiere'];
+        $soutenance->date_soutenance = $validated['date_soutenance'];
+        $soutenance->heurs_soutenace = $validated['heurs_soutenance'];
+
+        $soutenance->save(); // Enregistrement de la soutenance
+
+        $jury = Jury::findOrFail($validated['id_jury']);
+        $enseignant1 = User::findOrFail($jury->id_enseigant1);
+        $enseignant2 = User::findOrFail($jury->id_enseigant2);
+
+        if ($jury->id_enseigant3) {
+            $enseignant3 = User::findOrFail($jury->id_enseigant3);
+            $enseignant3->notify(new SoutenanceProgramationNotification($validated));
         }
+
+        $memoire = Memoire::findOrFail($validated['id_memoire']);
+        $binome = Binome::findOrFail($memoire->id_binome);
+        $etudiant1 = User::findOrFail($binome->id_etudiant1);
+        $etudiant2 = User::findOrFail($binome->id_etudiant2);
+
+        $etudiant1->notify(new SoutenanceProgramationNotification($validated));
+        $etudiant2->notify(new SoutenanceProgramationNotification($validated));
+        $enseignant1->notify(new SoutenanceProgramationNotification($validated));
+        $enseignant2->notify(new SoutenanceProgramationNotification($validated));
+
+        return response()->json(['message' => 'Soutenance programmée avec succès!']);
+    } catch (Exception $e) {
+        // En cas d'erreur, enregistrement de l'erreur dans le fichier de logs et retour d'une réponse JSON avec le message d'erreur
+        Log::error('Erreur lors de la programmation de la soutenance: ' . $e->getMessage());
+        return response()->json(['error' => 'Une erreur est survenue. Veuillez réessayer plus tard. '.$e->getMessage()], 500);
     }
+}
+
 
 
     public function agenda()

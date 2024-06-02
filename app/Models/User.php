@@ -30,6 +30,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'id_promotion',
         'phone',
     ];
+    
+    public function routeNotificationForWhatsApp()
+    {
+        return $this->phone ? 'whatsapp:' . $this->phone : null;
+    }
+
     public function filiere()
     {
         return $this->belongsTo(Filiere::class, 'id_filiere');

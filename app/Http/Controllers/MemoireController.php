@@ -8,6 +8,9 @@ use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
 use App\Models\Soutenance;
+use App\Models\User;
+use App\Notifications\EnvoiMemoireNotification;
+use App\Notifications\ModifMemoireNotification;
 use App\Services\OpenAIService;
 use Illuminate\Http\Request;
 
@@ -57,6 +60,26 @@ class MemoireController extends Controller
         $memoire->save();
         // Appeler la fonction compare avec le mémoire nouvellement créé
        // $this->compare($memoire);
+
+       $binomeId = $request->input('id_binome');
+       if ($binomeId) {
+           $binome = Binome::findOrFail($binomeId);
+       
+           $etudiant1 = User::findOrFail($binome->id_etudiant1);
+           $etudiant2 = User::findOrFail($binome->id_etudiant2);
+       
+           $sender = auth()->user();
+       
+           if ($etudiant1->id === $sender->id) {
+               $etudiant2->notify(new EnvoiMemoireNotification($sender));
+           } else {
+               $etudiant1->notify(new EnvoiMemoireNotification($sender));
+           }
+       } else {
+           return redirect()->route('memoire.index')->with('error', 'L\'étudiant destinataire n\'a pas été spécifié.');
+       }
+       
+       
         return redirect()->route('memoire.index')->with('success', 'Memoire created successfully.');
     }
 
@@ -79,6 +102,23 @@ et a la fonction de sauvegarde des document */
         $this->uploadMemoireFile($memoire, $request);
 
         $memoire->save();
+        $binomeId = $request->input('id_binome');
+        if ($binomeId) {
+            $binome = Binome::findOrFail($binomeId);
+        
+            $etudiant1 = User::findOrFail($binome->id_etudiant1);
+            $etudiant2 = User::findOrFail($binome->id_etudiant2);
+        
+            $sender = auth()->user();
+        
+            if ($etudiant1->id === $sender->id) {
+                $etudiant2->notify(new ModifMemoireNotification($sender));
+            } else {
+                $etudiant1->notify(new ModifMemoireNotification($sender));
+            }
+        } else {
+            return redirect()->route('memoire.index')->with('error', 'L\'étudiant destinataire n\'a pas été spécifié.');
+        }
 
         return redirect()->route('memoire.index')->with('success', 'Memoire updated successfully.');
     }
