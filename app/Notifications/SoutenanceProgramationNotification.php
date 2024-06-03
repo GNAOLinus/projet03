@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Notifications\Channels\WhatsAppChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -15,7 +14,7 @@ class SoutenanceProgramationNotification extends Notification
     protected $soutenanceDetails;
 
     /**
-     * Create a new notification instance.
+     * Crée une nouvelle instance de notification.
      */
     public function __construct($soutenanceDetails)
     {
@@ -29,7 +28,7 @@ class SoutenanceProgramationNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail','database',WhatsAppChannel::class];
+        return ['mail','database'];
     }
 
     /**
@@ -39,27 +38,12 @@ class SoutenanceProgramationNotification extends Notification
     {
         return (new MailMessage)
         ->subject('Programmation de Soutenance')
-        ->line('La soutenance pour le mémoire a été programmée.')
+        ->line('La soutenance pour le mémoire ' . $this->soutenanceDetails['titre'] . ' a été programmée.')
         ->line('Date : ' . $this->soutenanceDetails['date_soutenance'])
         ->line('Heure : ' . $this->soutenanceDetails['heurs_soutenance'])
-        ->line('Lieu : ' . $this->soutenanceDetails['id_site->site'])
+        ->line('Lieu ESM : ' . $this->soutenanceDetails['site_nom'] . ' au ' . $this->soutenanceDetails['site_address'])
         ->line('Merci d\'utiliser notre application!');
     }
-
-    /**
-     * Get the WhatsApp representation of the notification.
-     */
-    public function toWhatsApp(object $notifiable): array
-    {
-        return [
-            'body' => 'La soutenance pour le mémoire a été programmée. ' .
-                      'Date : ' . $this->soutenanceDetails['date_soutenance'] . ' ' .
-                      'Heure : ' . $this->soutenanceDetails['heurs_soutenance'] . ' ' .
-                      'Lieu : ' . $this->soutenanceDetails['id_site'] . ' ' .
-                      'Voir les détails : ' . url('/soutenances/' . $this->soutenanceDetails['id_memoire'])
-        ];
-    }
-
 
     /**
      * Get the array representation of the notification.
@@ -71,7 +55,9 @@ class SoutenanceProgramationNotification extends Notification
         return [
             'date_soutenance' => $this->soutenanceDetails['date_soutenance'],
             'heurs_soutenance' => $this->soutenanceDetails['heurs_soutenance'],
-            'id_site' => $this->soutenanceDetails['id_site'],
+            'site_nom' => $this->soutenanceDetails['site_nom'],
+            'site_address' => $this->soutenanceDetails['site_address'],
+            'titre' => $this->soutenanceDetails['titre'],
             'id_memoire' => $this->soutenanceDetails['id_memoire'],
         ];
     }

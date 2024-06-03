@@ -31,7 +31,7 @@
                                         <td>{{ $soutenance->memoire->titre }}</td>
                                         <td>{{ $soutenance->site->site }}</td>
                                         <td>{{ $soutenance->date_soutenance }}</td>
-                                        <td>{{ $soutenance->heurs_soutenace }}</td>
+                                        <td>{{ $soutenance->heurs_soutenance }}</td>
                                     </tr>
                                     @else
                                         <p>Aucune soutenace programmer pour la {{$filiere->filiere}}</p>

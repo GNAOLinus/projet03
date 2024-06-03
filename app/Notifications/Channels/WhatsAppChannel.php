@@ -20,12 +20,14 @@ class WhatsAppChannel
             return;
         }
 
-        $message = $notification->toWhatsApp($notifiable);
+        /*if (method_exists($notification, 'toWhatsApp')) {
+          //  $message = $notification->toWhatsApp($notifiable);
 
-        $this->twilio->messages->create($to, [
-            'from' => env('TWILIO_WHATSAPP_FROM'),
-            'body' => $message['body'],
-            'mediaUrl' => $message['mediaUrl'] ?? null,
-        ]);
+            $this->twilio->messages->create($to, [
+                'from' => env('TWILIO_WHATSAPP_FROM'),
+                'body' => $message['body'],
+                'mediaUrl' => $message['mediaUrl'] ?? null,
+            ]);
+        }*/
     }
 }

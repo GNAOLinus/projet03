@@ -20,7 +20,7 @@ class CreateSoutenancesTable extends Migration
             $table->foreignId('id_site')->constrained('sites');
             $table->foreignId('id_jury')->constrained('juries');
             $table->date('date_soutenance');
-            $table->time('heurs_soutenace');
+            $table->time('heurs_soutenance');
             $table->timestamps();
         });
     }
