@@ -8,6 +8,7 @@ use App\Http\Controllers\filiereController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\JuryController;
 use App\Http\Controllers\MemoireController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PreinscriptionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromotionController;
@@ -48,6 +49,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+    Route::prefix('/notifications')->group(function () {
+        // Route pour afficher les notifications non lues
+        Route::get('/non-lu', [NotificationController::class, 'usernotificationNonLu'])
+            ->name('notifications.non-lu');
+
+        // Route pour afficher les notifications lues
+        Route::get('s/lu', [NotificationController::class, 'usernotificationLu'])
+            ->name('notifications.lu');
+
+        // Route pour afficher toutes les notifications
+        Route::get('/', [NotificationController::class, 'notification'])
+            ->name('notifications.all');
     });
 
         Route::resource('sites', SiteController::class);

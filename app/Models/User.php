@@ -32,9 +32,10 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
     
     public function routeNotificationForWhatsApp()
-    {
-        return $this->phone ? 'whatsapp:' . $this->phone : null;
-    }
+{
+    return $this->phone; // Assurez-vous que ce champ contient le numéro WhatsApp de l'utilisateur
+}
+
 
     public function filiere()
     {

@@ -19,6 +19,13 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __("tableau de bord") }} 
                     </x-nav-link>
+                     <!-- Lien pour les notifications -->
+                    <x-nav-link :href="route('notifications.all')" :active="request()->routeIs('notifications.*')">
+                        <svg class="h-6 w-6 fill-current text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M10 18a2 2 0 01-1.732-1h3.464A2 2 0 0110 18z"/>
+                            <path fill-rule="evenodd" d="M4.5 11c.512 0 .935-.348 1.061-.812C5.455 9.897 5.882 9 6.5 9h7c.618 0 1.045.897.439 1.188C14.565 10.652 15 11.192 15 12v2a2 2 0 01-2 2H7a2 2 0 01-2-2v-2c0-.808.435-1.348.939-1.812A1.25 1.25 0 014.5 11zM10 1a3 3 0 00-3 3v1H5a2 2 0 00-2 2v2a3 3 0 003 3h8a3 3 0 003-3v-2a2 2 0 00-2-2h-2V4a3 3 0 00-3-3zm0 1a2 2 0 00-2 2v1h4V4a2 2 0 00-2-2zm5 8h-1V7h1a1 1 0 110 2zm0 4h-1v-1h1a1 1 0 110 2z" clip-rule="evenodd"/>
+                        </svg>
+                    </x-nav-link>
                     
                 </div>
             </div>

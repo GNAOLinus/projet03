@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Channels;
+namespace App\Channels;
 
 use Illuminate\Notifications\Notification;
 use Twilio\Rest\Client;
@@ -9,25 +9,23 @@ class WhatsAppChannel
 {
     protected $twilio;
 
-    public function __construct()
+    public function __construct(Client $twilio)
     {
-        $this->twilio = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
+        $this->twilio = $twilio;
     }
 
     public function send($notifiable, Notification $notification)
     {
-        if (! $to = $notifiable->routeNotificationFor('whatsapp')) {
-            return;
+        if (!method_exists($notification, 'toWhatsApp')) {
+            throw new \Exception('Notification is missing toWhatsApp method.');
         }
 
-        /*if (method_exists($notification, 'toWhatsApp')) {
-          //  $message = $notification->toWhatsApp($notifiable);
+        $message = $notification->toWhatsApp($notifiable);
+        $recipient = $notifiable->routeNotificationFor('whatsapp');
 
-            $this->twilio->messages->create($to, [
-                'from' => env('TWILIO_WHATSAPP_FROM'),
-                'body' => $message['body'],
-                'mediaUrl' => $message['mediaUrl'] ?? null,
-            ]);
-        }*/
+        $this->twilio->messages->create("whatsapp:{$recipient}", [
+            'from' => "whatsapp:" . config('services.twilio.whatsapp_from'),
+            'body' => $message,
+        ]);
     }
 }
