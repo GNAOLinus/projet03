@@ -9,18 +9,21 @@
                     Gestion des mémoires
                 </div>
                 <div class="card-body">
-                    <ul class="list-group listmemoire.allmemoire-group-flush">
+                    <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                            <a href="{{route('memoire.allmemoire',['page'=>'yes'])}}" class="btn btn-primary">Publier des mémoires</a>
+                            <a href="{{ route('memoire.allmemoire', ['page' => 'yes']) }}" class="btn btn-primary">Publier des mémoires</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="{{Route('memoirepublier')}}" class="btn btn-primary">Gérer les mémoires publiées</a>
+                            <a href="{{ route('memoirepublier') }}" class="btn btn-primary">Gérer les mémoires publiées</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="{{route('memoire.allmemoire',['page'=>'no'])}}" class="btn btn-primary">Liste des mémoires</a>
+                            <a href="{{ route('memoire.allmemoire', ['page' => 'no']) }}" class="btn btn-primary">Liste des mémoires</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="{{route('preinscription')}}" class="btn btn-primary">Pré inscription des etudiants </a>
+                            <a href="{{ route('preinscription') }}" class="btn btn-primary">Pré-inscription des étudiants</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{{ route('diplome.index') }}" class="btn btn-primary">Les diplômes</a>
                         </li>
                     </ul>
                 </div>
@@ -36,31 +39,37 @@
                         <select name="id_promotion" id="id_promotion" class="form-control">
                             <option value="">Sélectionner une promotion</option>
                             @foreach ($promotions as $promotion)
-                            <option value="{{$promotion->id}}">{{$promotion->promotion}}</option>
+                                <option value="{{ $promotion->id }}">{{ $promotion->promotion }}</option>
+                            @endforeach
+                        </select>
+                        <br>
+                        <select name="id_diplome" id="id_diplome" class="form-control">
+                            <option value="">Diplôme pour les étudiants</option>
+                            @foreach ($diplomes as $diplome)
+                                <option value="{{ $diplome->id }}">{{ $diplome->diplome }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <form action="{{route('promotion.store')}}" method="post">
+                        <form action="{{ route('promotion.store') }}" method="post">
                             @csrf
                             <input type="text" name="promotion" class="form-control" placeholder="Nouvelle promotion">
                     </div>
                     <div class="col-md-3">
                         <button class="btn btn-primary">Créer</button>
-                    </form>
+                        </form>
                     </div>
                 </div>
-               
                 <div class="card-body">
                     <ul class="list-group list-group-flush" id="copie-lien">
-                            @foreach (['Administrateur', 'Etudiant', 'Enseignant'] as $index => $role)
-                                <li class="list-group-item">
-                                    <button class="btn btn-primary copy-button" data-role="{{ $index + 1 }}">Ajouter un(e) {{ ucfirst($role) }}</button>
-                                    <input type="text" class="link-input form-control" style="display: none;">
-                                </li>
+                        @foreach (['Administrateur', 'Etudiant', 'Enseignant'] as $index => $role)
+                            <li class="list-group-item">
+                                <button class="btn btn-primary copy-button" data-role="{{ $index + 1 }}">Ajouter un(e) {{ ucfirst($role) }}</button>
+                                <input type="text" class="link-input form-control" style="display: none;">
+                            </li>
                         @endforeach
                         <li class="list-group-item">
-                            <a href="{{route('users')}}" class="btn btn-light">Liste des utilisateurs</a>
+                            <a href="{{ route('users') }}" class="btn btn-light">Liste des utilisateurs</a>
                         </li>
                     </ul>
                 </div>
@@ -131,10 +140,10 @@
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                            <a href="{{route('soutenances.index')}}" class="btn btn-primary">Programmer les soutenances</a>
+                            <a href="{{ route('soutenances.index') }}" class="btn btn-primary">Programmer les soutenances</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="{{route('agenda')}}" class="btn btn-secondary">Gestion des calendriers</a>
+                            <a href="{{ route('agenda') }}" class="btn btn-secondary">Gestion des calendriers</a>
                         </li>
                     </ul>
                 </div>
@@ -145,32 +154,47 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var promotionSelect = document.getElementById('id_promotion');
+        var diplomeSelect = document.getElementById('id_diplome');
         var copyButtons = document.querySelectorAll('.copy-button');
 
         function toggleCopyButtons() {
             var selectedPromotion = promotionSelect.value;
+            var selectedDiplome = diplomeSelect.value;
+
             copyButtons.forEach(function(button) {
-                button.disabled = selectedPromotion === '';
+                var role = button.getAttribute('data-role');
+                if (role === '2') { // Diplôme obligatoire pour les étudiants
+                    button.disabled = selectedPromotion === '' || selectedDiplome === '';
+                } else {
+                    button.disabled = selectedPromotion === '';
+                }
             });
         }
 
         promotionSelect.addEventListener('change', toggleCopyButtons);
+        diplomeSelect.addEventListener('change', toggleCopyButtons);
         toggleCopyButtons();
 
         copyButtons.forEach(function(button) {
             button.addEventListener('click', function() {
                 var selectedPromotion = promotionSelect.value;
+                var selectedDiplome = diplomeSelect.value;
+                var role = this.getAttribute('data-role');
 
-                if (selectedPromotion === '') {
-                    alert('Veuillez sélectionner une promotion avant de copier le lien.');
+                if (selectedPromotion === '' || (role === '2' && selectedDiplome === '')) {
+                    alert('Veuillez sélectionner une promotion et un diplôme (pour les étudiants) avant de copier le lien.');
                     return;
                 }
 
                 var input = this.parentNode.querySelector('.link-input');
-                var role = this.getAttribute('data-role');
 
                 var url = `/generate-link/${role}/${selectedPromotion}`;
-
+                if (role === '2') {
+                    url += `/${selectedDiplome}`;
+                }else{
+                    url += `/0`;
+                }
+                console.log(url);
                 fetch(url)
                     .then(response => {
                         if (!response.ok) {

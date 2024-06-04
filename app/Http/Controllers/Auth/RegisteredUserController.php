@@ -27,18 +27,25 @@ class RegisteredUserController extends Controller
             $data = Crypt::decrypt($encryptedData);
 
             // Valider les données décryptées
-            if (!isset($data['role']) || !isset($data['promotion'])) {
+            if (!isset($data['role']) || !isset($data['promotion'] )) {
                 abort(404, 'Données d\'enregistrement invalides.');
-            }
+            }  
 
             // Récupérer les informations nécessaires
             $role = $data['role'];
             $promotion = $data['promotion'];
+            if (isset($data['diplome'])) {
+                $diplome = $data['diplome'];
+            }else{
+                $diplome= null;
+            }
+            
+
             $filieres = Filiere::all();
             $sites = Site::all();
 
             // Retourner la vue d'enregistrement avec les données nécessaires
-            return view('auth.register', compact('encryptedData', 'role', 'filieres', 'sites', 'promotion'));
+            return view('auth.register', compact('encryptedData', 'role', 'filieres', 'sites', 'promotion','diplome'));
         } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
             Log::error('Échec du décryptage des données d\'enregistrement', ['error' => $e->getMessage()]);
             abort(404); // Gérez l'erreur comme vous le souhaitez
@@ -62,6 +69,7 @@ class RegisteredUserController extends Controller
         'id_filiere' => ['required', 'integer', 'exists:filieres,id'],
         'id_promotion' => ['required', 'integer', 'exists:promotions,id'],
         'matricule' => ['sometimes', 'integer'],
+        'id_diplome' => ['sometimes', 'integer'],
         'phone' => ['sometimes', 'string'],
         'encryptedData' => ['required', 'string'],
     ]);
@@ -87,6 +95,7 @@ class RegisteredUserController extends Controller
                 'id_site' => $request->id_site,
                 'id_filiere' => $request->id_filiere,
                 'id_promotion' => $request->id_promotion,
+                'id_diplome' => $request->id_diplome,
                 'phone' => $request->phone,
             ]);
 

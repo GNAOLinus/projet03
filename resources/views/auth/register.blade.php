@@ -87,6 +87,7 @@
         <div class="from-group">
             <input type="hidden" name="id_promotion" value="{{ $promotion }}">
             <input type="hidden" name="id_role" value="{{ $role }}">
+            <input type="hidden" name="id_diplome" value="{{ $diplome }}">
             <input type="hidden" name="encryptedData" value="{{ $encryptedData }}">
         </div>
 

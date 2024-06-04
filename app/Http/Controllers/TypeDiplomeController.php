@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TypeDiplome;
 use App\Http\Requests\StoreTypeDiplomeRequest;
 use App\Http\Requests\UpdateTypeDiplomeRequest;
+use Illuminate\Http\Request;
 
 class TypeDiplomeController extends Controller
 {
@@ -13,8 +14,9 @@ class TypeDiplomeController extends Controller
      */
     public function index()
     {
+        $diplome='no';
         $diplomes= TypeDiplome::all();
-        return view('admin.diplome',compact('diplome'));
+        return view('admin.diplome',compact('diplomes','diplome'));
     }
 
   
@@ -22,13 +24,14 @@ class TypeDiplomeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTypeDiplomeRequest $request)
+    public function store(Request $request)
     {
         $validatedData = $request->validate([
             'diplome' => 'required',
+            'description' => 'required',
         ]);
     
-        $filiere = TypeDiplome::create($validatedData);
+         TypeDiplome::create($validatedData);
     
         return redirect()->route('diplome.index')->with('success', 'filiere créé avec succès');
     }
@@ -44,21 +47,23 @@ class TypeDiplomeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(TypeDiplome $typeDiplome)
+    public function edit(TypeDiplome $diplome)
     {
-        return view('admin.diplome',compact('diplome'));
+        $diplomes= TypeDiplome::all();
+        return view('admin.diplome',compact('diplome','diplomes'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTypeDiplomeRequest $request, TypeDiplome $typeDiplome)
+    public function update(Request $request, TypeDiplome $diplome)
     {
         $validatedData = $request->validate([
-            'filiere' => 'required',
+            'diplome' => 'required',
+            'description' => 'required',
         ]);
     
-        $typeDiplome->update($validatedData);
+        $diplome->update($validatedData);
     
         return to_route('diplome.index')->with('success', 'filiere mis à jour avec succès');
     }
@@ -66,10 +71,10 @@ class TypeDiplomeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TypeDiplome $typeDiplome)
+    public function destroy(TypeDiplome $diplome)
     {
-        $typeDiplome->delete();
+        $diplome->delete();
     
-        return to_route('filieres.index')->with('success', 'filiere supprimé avec succès');
+        return to_route('diplome.index')->with('success', 'filiere supprimé avec succès');
     }
 }

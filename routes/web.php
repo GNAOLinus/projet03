@@ -38,7 +38,7 @@ Route::get('/memoires/{memoire}/previsualiser', [MemoireController::class, 'prev
 
  
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/generate-link/{role}/{promotion}', [TeacherController::class, 'generateLink'])->name('generate.link');
+    Route::get('/generate-link/{role}/{promotion}/{diplome}', [TeacherController::class, 'generateLink'])->name('generate.link');
 
     Route::get('/redirection', [RedirectionController::class, 'redirection'])->name('dashboard');
 

@@ -30,15 +30,29 @@ class TeacherController extends Controller
 
         return view('teacher.dashboard', ['soutenances' => $soutenances, 'message' => $message, 'id_edit' => $id_edit]);
     }
-    public function generateLink($role, $promotion)
-    {
+    public function generateLink($role, $promotion, $diplome)
+{
+    if ($diplome === '0') {
         $data = [
             'role' => $role,
             'promotion' => $promotion,
+            'diplome' => null,
         ];
-        $encryptedData = Crypt::encrypt($data);
-        // Retourner une réponse JSON avec l'URL chiffrée
-        return response()->json(['link' => url("http://localhost:8000/register/" . $encryptedData)]);
+    } else {
+        $data = [
+            'role' => $role,
+            'promotion' => $promotion,
+            'diplome' => $diplome,
+        ];
     }
     
+    try {
+        $encryptedData = Crypt::encrypt($data);
+        // Retourner une réponse JSON avec l'URL chiffrée
+        return response()->json(['link' => url("register/" . $encryptedData)]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération du lien.'], 500);
+    }
+}
+
 }

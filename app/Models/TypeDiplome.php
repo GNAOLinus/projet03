@@ -10,5 +10,6 @@ class TypeDiplome extends Model
     use HasFactory;
     protected $fillable = [
         'diplome',
+        'description',
     ];
 }
