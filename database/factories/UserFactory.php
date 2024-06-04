@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Filiere;
 use App\Models\promotion;
 use App\Models\Site;
+use App\Models\TypeDiplome;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -29,14 +30,17 @@ class UserFactory extends Factory
             'phone' => fake()->unique()->phoneNumber(),
             'created_at'=>$date,
             'updated_at'=>$date,
-            //'id_filiere' => Filiere::all()->random()->id, // Utilisation d'une filière aléatoire existante
-            'id_site' => Site::all()->random()->id,       // Utilisation d'un site aléatoire existant
-            'id_role'=>'2',
+        // activé ou ajuster pour les etudiants
+
+            'id_filiere' => Filiere::all()->random()->id, // Utilisation d'une filière aléatoire existante
             //'id_filiere'=> fake()->randomElement(['1','2','3']),
-            'id_filiere'=> Filiere::all()->random()->id,
+            'id_site' => Site::all()->random()->id,       // Utilisation d'un site aléatoire existant
             //'id_site'=>'1',
+            'id_role'=>'2',
             //'id_promotion'=>promotion::all()->random()->id,
             'id_promotion'=> fake()->randomElement(['11','12','13','14', '15']),
+            'id_diplome'=> TypeDiplome::all()->random()->id,
+
         ];
     }
 }

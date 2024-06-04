@@ -18,6 +18,7 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SoutenanceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TypeDiplomeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,7 @@ Route::post('/profile/plus', [UserController::class, 'profile'])->name('profile'
 Route::prefix('/recherche')->group(function(){
     Route::get('/filtre', [recherchecontroller::class, 'show'])->name('recherche.filtre');
     Route::get('/recherche', [recherchecontroller::class, 'search'])->name('recherche');
-    Route::post('/filtre/resultat', [recherchecontroller::class, 'filtre'])->name('recherche.traitement');
+    Route::get('/filtre/resultat', [recherchecontroller::class, 'filtre'])->name('recherche.traitement');
 });  
 
 Route::get('/memoire/download/{id}', [MemoireController::class, 'download'])->name('memoire.download');
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('notifications.all');
     });
 
+        Route::resource('diplome',TypeDiplomeController::class);
         Route::resource('sites', SiteController::class);
         Route::resource('filieres', filiereController::class);
         Route::resource('binomes', BinomeController::class);
@@ -91,7 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('memoire/all/{page}', [MemoireController::class, 'voire'])->name('memoire.allmemoire');
         Route::post('/memoire/publier', [MemoireController::class,'publication'])->name('memoire.publier');
         Route::get('/memoire/publier/gestion',[MemoireController::class,'MemoirePublier'])->name('memoirepublier');
-        Route::get('/compare-memoire/{id}', [MemoireController::class, 'compare']);
+        Route::get('/compare/memoire/{id}', [MemoireController::class, 'compare']);
 
         Route::get('/preinscription', [PreinscriptionController::class, 'index'])->name('preinscription');
         Route::post('/preinscription/formulaire', [PreinscriptionController::class, 'store'])->name('preinscription.store');

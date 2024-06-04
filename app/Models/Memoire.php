@@ -41,5 +41,9 @@ class Memoire extends Model
     {
         return $this->belongsTo(promotion::class, 'id_promotion');
     }
+    public function diplome()
+    {
+        return $this->belongsTo(TypeDiplome::class, 'id_diplome');
+    }
     
 }

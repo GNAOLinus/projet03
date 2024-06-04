@@ -179,6 +179,7 @@ et a la fonction de sauvegarde des document */
             'encadreur' => 'required|string',
             'id_promotion' => 'required|int',
             'id_filiere'=> 'required|int',
+            'id_diplome'=> 'required|int',
             'id_binome'=> 'int',
             'statut'=>'string',
         ]);

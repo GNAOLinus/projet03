@@ -48,7 +48,7 @@
       </select>
     </div><br><br>
 
-    <input type="hidden" name="statut" value="privé"> 
+    <input type="hidden" name="id_diplome" value="{{Auth::user()->id_diplome}}"> 
     <input type="hidden" name="id_binome" value="{{$binome->id}}"> 
     <input type="hidden" name="id_filiere" value="{{Auth::user()->id_filiere}}"> 
     <button type="submit" class="btn btn-primary">

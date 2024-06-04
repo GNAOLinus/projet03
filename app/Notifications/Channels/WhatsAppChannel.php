@@ -14,7 +14,7 @@ class WhatsAppChannel
         $this->twilio = $twilio;
     }
 
-    public function send($notifiable, Notification $notification)
+   /* public function send($notifiable, Notification $notification)
     {
         if (!method_exists($notification, 'toWhatsApp')) {
             throw new \Exception('Notification is missing toWhatsApp method.');
@@ -27,5 +27,5 @@ class WhatsAppChannel
             'from' => "whatsapp:" . config('services.twilio.whatsapp_from'),
             'body' => $message,
         ]);
-    }
+    }*/
 }

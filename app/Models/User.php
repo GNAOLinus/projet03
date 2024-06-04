@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'id_site',
         'id_filiere',
         'id_promotion',
+        'id_diplome',
         'phone',
     ];
     
@@ -44,6 +45,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function promotion()
     {
         return $this->belongsTo(promotion::class, 'id_promotion');
+    }
+    public function diplome()
+    {
+        return $this->belongsTo(TypeDiplome::class, 'id_diplome');
     }
     public function site()
     {

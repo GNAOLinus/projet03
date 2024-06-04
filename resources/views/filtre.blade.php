@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-4"></div>
         <div class="col-md-4" id="transparant">
-            <form action="{{ route('recherche.traitement') }}" method="post">
+            <form action="{{ route('recherche.traitement') }}" method="get">
                 @csrf
                 <div class="form-group">
                     <label for="titre">Titre</label>
@@ -24,7 +24,7 @@
                         <select name="id_promotion" class="form-control">
                             <option value="">Toutes les promotions</option>
                             @foreach($promotions as $promotion)
-                            <option value="{{ $promotion->id}}" >{{ $promotion->promotion }}</option>
+                                <option value="{{ $promotion->id }}">{{ $promotion->promotion }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -33,17 +33,28 @@
                         <select class="form-control" id="filiere" name="filiere">
                             <option value="">Toutes les Filières</option>
                             @foreach($filieres as $filiere)
-                            <option value="{{ $filiere->id }}">{{ $filiere->filiere }}</option>
+                                <option value="{{ $filiere->id }}">{{ $filiere->filiere }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="auteur">Diplôme</label>
+                    <select name="diplome" id="" class="form-control">
+                        <option value="">Tous les diplômes</option>
+                        @foreach($diplomes as $diplome)
+                            <option value="{{ $diplome->id }}">{{ $diplome->diplome }}</option>
+                        @endforeach
+                    </select>                
+                </div>
                 <br>
-                <button type="submit" class="btn btn-primary">Filtrer</button>
+                <button type="submit" class="btn btn-primary px-5 py-2">Filtrer</button>
             </form>
+            <br>
         </div>
     </div>
 </div>
+
 
 @endsection
 
@@ -61,8 +72,9 @@
             <div class="card">
                 <div class="card-head">
                     <div class="alert alert-success">
-                        filiere: {{ $memoire->filiere->filiere }} 
-                        <p>promotion: {{ $memoire->promotion->promotion }}</p>
+                        Filiere: {{ $memoire->filiere->filiere }} 
+                        <p>Promotion: {{ $memoire->promotion->promotion }}</p>
+                        <p>Document de: {{ $memoire->diplome->diplome }}</p>
                     </div>
                 </div>
                 <div class="card-body">

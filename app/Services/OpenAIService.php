@@ -13,8 +13,22 @@ class OpenAIService
         $apiKey = env('OPENAI_API_KEY');
         $this->client = OpenAI::client($apiKey);
     }
+    public function compareMemoires($titre1, $resume1, $titre2, $resume2) 
+    {
+        $query ='salut';
 
-    public function compareMemoires($titre1, $resume1, $titre2, $resume2)
+        $response = $this->client->completions()->createStreamed([
+            'model' => 'gtp-3.5-turbo-davinci',
+            'messages' => [
+                ['role' => 'user', 'content' => $query],
+            ],
+            'max_tokens' => 100,
+            'temperature' => 0.5,
+        ]);
+        return $response;
+    }
+
+   /* public function compareMemoires($titre1, $resume1, $titre2, $resume2)
     {
         $query = "Compare these two theses based on their titles and summaries. Score their similarity on a scale from 0 to 10, where 0 means completely different and 10 means almost identical. Consider the following aspects: semantic meaning, main themes, concepts and ideas, vocabulary and terminology, and structure and organization. Provide a brief explanation for the score.
         Thesis 1:
@@ -26,8 +40,8 @@ class OpenAIService
         Summary: $resume2";
 
         try {
-            $response = $this->client->chat()->create([
-                'model' => 'gpt-4o-2024-05-13',
+            $response = $this->client->completions()->createStreamed([
+                'model' => 'gpt-3.5-turbo-instruct',
                 'messages' => [
                     ['role' => 'user', 'content' => $query],
                 ],
@@ -52,5 +66,5 @@ class OpenAIService
                 'error' => 'An error occurred: ' . $e->getMessage(),
             ];
         }
-    }
+    }*/
 }

@@ -5,6 +5,7 @@ use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
 use App\Models\Site;
+use App\Models\TypeDiplome;
 use Illuminate\Http\Request;
 
 class RechercheController extends Controller
@@ -13,10 +14,9 @@ class RechercheController extends Controller
     {
         $filieres = Filiere::all();
         $memoires = Memoire::orderBy('created_at', 'desc')->paginate(25);
-
         $promotions = promotion::all();
-
-        return view('filtre', compact('memoires', 'filieres', 'promotions'));
+        $diplomes= TypeDiplome::all();
+        return view('filtre', compact('memoires', 'filieres', 'promotions','diplomes'));
     }
 
     public function filtre(Request $request)
@@ -26,7 +26,7 @@ class RechercheController extends Controller
         $auteur = $request->input('auteur');
         $promotion = $request->input('id_promotion');
         $filiere = $request->input('filiere');
-
+        $diplome= $request->input('diplome');
         // Construire la requête en fonction des paramètres fournis
         $query = Memoire::query();
 
@@ -53,14 +53,17 @@ class RechercheController extends Controller
         if ($filiere) {
             $query->where('id_filiere', $filiere);
         }
+        if ($diplome) {
+            $query->where('id_diplome', $diplome);
+        }
 
         // Exécuter la requête
         $memoires = $query->orderBy('created_at', 'desc')->paginate(25);
         $filieres = Filiere::all();
         $promotions = promotion::all();
-
+        $diplomes= TypeDiplome::all();
         // Retourner la vue avec les résultats de la recherche
-        return view('filtre', compact('memoires', 'filieres', 'promotions'));
+        return view('filtre', compact('memoires', 'filieres', 'promotions','diplomes'));
     }
     public function search(Request $request)
     {
@@ -86,8 +89,9 @@ class RechercheController extends Controller
 
         $filieres = Filiere::all();
         $promotions = promotion::all();
+        $diplomes= TypeDiplome::all();
 
-        return view('filtre', compact('memoires', 'filieres', 'promotions'));
+        return view('filtre', compact('memoires', 'filieres', 'promotions','diplomes'));
     }
 }
 
