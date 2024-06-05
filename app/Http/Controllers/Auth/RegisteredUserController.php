@@ -14,9 +14,28 @@ use App\Models\InfoEtudiant;
 use App\Models\Site;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\Importable; // Si vous utilisez la méthode `import`
+use Maatwebsite\Excel\Concerns\WithMultipleSheets; // Si vous lisez plusieurs feuilles
+
+
 
 class RegisteredUserController extends Controller
 {
+
+    private function checkPreRegistration($name, $matricule, $idFiliere, $idSite)
+    {
+        $preRegistrations = Excel::get(public_path('preinscriptionexcel/preinscriptions.xlsx'))->toArray();
+
+        $preRegisteredUsers = array_filter($preRegistrations, function ($row) use ($name, $matricule, $idFiliere, $idSite) {
+            return $row['name'] === $name &&
+                   $row['matricule'] === $matricule &&
+                   $row['id_filiere'] === $idFiliere &&
+                   $row['id_site'] === $idSite;
+        });
+    
+        return count($preRegisteredUsers) > 0;
+    }
     /**
      * Affiche la vue d'enregistrement.
      */
@@ -74,21 +93,17 @@ class RegisteredUserController extends Controller
         'encryptedData' => ['required', 'string'],
     ]);
 
-    // Récupérer les données chiffrées
-    $encryptedData = $request->input('encryptedData');
-
     // Vérifier si le rôle de l'utilisateur est 'étudiant' (id rôle = 2)
     if ($request->id_role == 2) {
-        $userMatricule = InfoEtudiant::where('matricule', $request->matricule)->first();
-
+        $filiere= filiere::findorfail($request->id_filiere);
+        $site=Site::findorfail($request->id_filiere);
+     // Vérification si l'utilisateur est préinscrit dans le fichier Excel
+         $isPreRegistered = $this->checkPreRegistration($request->name, $request->matricule, $filiere, $site);
         // Vérifier les informations de l'étudiant
-        if ($userMatricule &&
-            $userMatricule->name == $request->name &&
-            $userMatricule->id_site == $request->id_site &&
-            $userMatricule->id_filiere == $request->id_filiere) {
+        if ($isPreRegistered) {
 
             $user = User::create([
-                'name' => $request->name,
+                'name' => $$validatedData->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'id_role' => $request->id_role,
