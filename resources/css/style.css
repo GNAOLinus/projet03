@@ -10,18 +10,7 @@
   text-align: center;
   position: relative;
 }
-.image-banner2 {
- 
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 75vh; /* Hauteur égale à la hauteur de la fenêtre du navigateur */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  position: relative;
-}
+
 
 
 #transparant{

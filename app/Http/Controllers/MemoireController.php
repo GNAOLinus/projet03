@@ -31,8 +31,9 @@ class MemoireController extends Controller
             // Si aucun binôme n'a été trouvé, définir le mémoire sur null
             $memoire = null;
         }
+        $porgrammer=Soutenance::where('binome',$binome);
         
-        return view('student.dashboard', compact('memoire', 'binome'));
+        return view('student.dashboard', compact('memoire', 'binome','porgrammer'));
     }
     
 

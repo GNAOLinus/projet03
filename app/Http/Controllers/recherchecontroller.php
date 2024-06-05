@@ -63,7 +63,7 @@ class RechercheController extends Controller
         $promotions = promotion::all();
         $diplomes= TypeDiplome::all();
         // Retourner la vue avec les résultats de la recherche
-        return view('filtre', compact('memoires', 'filieres', 'promotions','diplomes'));
+        return view('filtre', compact('memoires', 'filieres', 'promotions','diplomes','titre','auteur','promotion','filiere','diplome'));
     }
     public function search(Request $request)
     {

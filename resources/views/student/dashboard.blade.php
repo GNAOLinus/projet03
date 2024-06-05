@@ -30,7 +30,7 @@
                 </tr>
                 <tr>
                     <th>Action</th>
-                    <td><a href="{{ route('memoire.edit', ['memoire' => $memoire->id]) }}" class="btn btn-primary">Modifier</a></td>
+                    <td><a href="{{ route('memoire.edit', ['memoire' => $memoire->id]) }}" class="btn btn-primary @if($memoire->statut ==='public') disabled @endif">Modifier</a></td>
                 </tr>
             </tbody>
         </table>

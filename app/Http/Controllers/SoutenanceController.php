@@ -31,6 +31,8 @@ class SoutenanceController extends Controller
         $memoires_programmer = Soutenance::pluck('id_memoire');
         $memoires = Memoire::where('id_filiere', $id_filiere)
                           ->whereNotIn('id', $memoires_programmer)
+                          ->where('note',null)
+                          ->where('appreciation',null)
                           ->get();
         return response()->json($memoires);
     }

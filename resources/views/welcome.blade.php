@@ -1,12 +1,13 @@
 @extends('layouts.base')
 
 @section('titre', 'Bienvenue')
-@section('paragraphe', 'dans la banque de mémoire de ESM-Bénin')
 
+@section('paragraphe', 'Bienvenue dans la banque de mémoire de ESM-Bénin')
+<br>
 @section('content')
     <div class="container my-5">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <h2>Présentation de l'application</h2>
                 <p>
                     Les mémoires académiques constituent des documents de recherche originaux, souvent le fruit d'un travail de longue haleine réalisé par les étudiants dans le cadre de leurs cursus universitaires. Ils contribuent à l'avancement des connaissances dans divers domaines en apportant de nouvelles perspectives, des données empiriques et des analyses critiques. La conservation des mémoires permet de préserver le savoir accumulé au fil du temps, offrant ainsi une base solide pour les futures recherches et les références académiques.
@@ -21,7 +22,7 @@
                     L'application permet aux utilisateurs de rechercher des mémoires en fonction de différents critères tels que le sujet, l'auteur, l'année, etc. Les mémoires sont organisés par catégories ou par domaines d'études pour faciliter la recherche et la navigation. Les utilisateurs peuvent prévisualiser les mémoires avant de les télécharger pour décider de leur pertinence.
                 </p>
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6 mt-4 mt-lg-0"> <!-- Ajout de marges sur les petits écrans pour séparer les colonnes -->
                 <div class="alert alert-danger" role="alert">
                     <x-info></x-info>
                 </div>

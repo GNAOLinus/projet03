@@ -24,7 +24,7 @@ class UserFactory extends Factory
         $date=fake()->dateTimeBetween('-1 year');
         return [
             'name'=> $this->faker->unique()->name,
-            'email' => fake()->unique()->safeEmail(),
+            'email' => $this->faker->unique()->safeEmail('@gmail.com'),
             'email_verified_at' => now(),
             'password' => Hash::make('123456789'),
             'phone' => fake()->unique()->phoneNumber(),

@@ -6,7 +6,7 @@
 
         <div class="col-md-9">
 
-            <h2 style="text-align: center;">SYSTEME DE GESTION DES Biômes</h2>
+            <h2 style="text-align: center;">SYSTEME DE GESTION DES BIÔMES</h2>
 
             <a href="{{ route('binomes.create') }}" class="btn btn-primary">Ajouter un binôme</a>
 

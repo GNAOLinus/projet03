@@ -5,9 +5,8 @@
 <br>
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4" id="transparant">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6" id="transparant">
             <form action="{{ route('recherche.traitement') }}" method="get">
                 @csrf
                 <div class="form-group">
@@ -22,7 +21,7 @@
                     <div class="form-group col-md-6">
                         <label for="annee">Promotion</label>
                         <select name="id_promotion" class="form-control">
-                            <option value="">Toutes les promotions</option>
+                            <option value="">Les promotions</option>
                             @foreach($promotions as $promotion)
                                 <option value="{{ $promotion->id }}">{{ $promotion->promotion }}</option>
                             @endforeach
@@ -39,8 +38,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="auteur">Diplôme</label>
-                    <select name="diplome" id="" class="form-control">
+                    <label for="diplome">Diplôme</label>
+                    <select name="diplome" id="diplome" class="form-control">
                         <option value="">Tous les diplômes</option>
                         @foreach($diplomes as $diplome)
                             <option value="{{ $diplome->id }}">{{ $diplome->diplome }}</option>
@@ -48,49 +47,49 @@
                     </select>                
                 </div>
                 <br>
-                <button type="submit" class="btn btn-primary px-5 py-2">Filtrer</button>
+                <button type="submit" class="btn btn-primary w-100">Filtrer</button>
             </form>
             <br>
         </div>
     </div>
 </div>
-
-
 @endsection
 
 @section('content')
-<br><br>
+<br>
 <div class="container">
     <div class="alert alert-danger" role="alert">
         <x-info></x-info>
     </div>
-    {{$memoires=$memoires}}
+
     <div class="row">
         @foreach($memoires as $memoire)
-        @if($memoire->statut === 'public')
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-head">
-                    <div class="alert alert-success">
-                        Filiere: {{ $memoire->filiere->filiere }} 
-                        <p>Promotion: {{ $memoire->promotion->promotion }}</p>
-                        <p>Document de: {{ $memoire->diplome->diplome }}</p>
+            @if($memoire->statut === 'public')
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-head">
+                        <div class="alert alert-success">
+                            <p>Filière: {{ $memoire->filiere->filiere }}</p>
+                            <p>Promotion: {{ $memoire->promotion->promotion }}</p>
+                            <p>Document de: {{ $memoire->diplome->diplome }}</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $memoire->titre }}</h5>
+                        <p class="card-text">Réaliser par :{{ $memoire->binome->etudiant1->name }} & {{ $memoire->binome->etudiant2->name }}</p>
+                        <p>Appréciation : {{ $memoire->appreciation }}</p>
+                        <p>Note : {{ $memoire->note }}</p>
+                        <a href="{{ route('memoires.previsualiser', ['memoire' => $memoire, 'memoires'=> $memoires]) }}" class="btn btn-primary">Prévisualiser</a>
                     </div>
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ $memoire->titre }}</h5>
-                    <p class="card-text">Réaliser par :{{ $memoire->binome->etudiant1->name }} & {{ $memoire->binome->etudiant2->name }}</p>
-                    <p>Appréciation : {{ $memoire->appreciation }}</p>
-                    <p>Note : {{ $memoire->note }}</p>
-                    
-                    <a href="{{ route('memoires.previsualiser', ['memoire' => $memoire,'memoires'=> $memoires]) }}" class="btn btn-primary">Prévisualiser </a>
-                </div>
             </div>
-        </div>
-        @endif
+            @endif
         @endforeach
     </div>
 </div>
 
-{{ $memoires->links() }}
+<!-- Pagination -->
+<div class="d-flex justify-content-center mt-4">
+    {{ $memoires->links('pagination::bootstrap-5') }}
+</div>
 @endsection
