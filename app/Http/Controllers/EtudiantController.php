@@ -64,8 +64,13 @@ class EtudiantController extends Controller
 
     public function getEtudiantsByFiliere($id_filiere)
     {
-        $etudiants = User::where('id_filiere', $id_filiere)->get();
+     // Récupérer les IDs des étudiants avec un binôme
+        $etudiants_avec_binome = Binome::pluck('id_etudiant1')->merge(Binome::pluck('id_etudiant2'))->toArray();
+
+     // Récupérer la liste des étudiants sans binôme avec l'ID du rôle égal à 2 et les paginer
+        $etudiants = User::where('id_filiere', $id_filiere)->get()
+        ->whereNotIn('id', $etudiants_avec_binome);
     
         return response()->json($etudiants);
-    }
+    }   
 }

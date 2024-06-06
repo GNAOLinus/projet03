@@ -3,6 +3,66 @@
 @section('content')
     <div class="container">
         <h1>Liste des mémoires</h1>
+        <div class="container">
+            <form action="{{ route('recherche.traitement') }}" method="get">
+                @csrf
+            <div class="row">
+               
+                <div class="col-md-2">
+                    <label for="titre">Titre</label>
+                    <input type="text" class="form-control" id="titre" name="titre" placeholder="Entrez le titre" value="{{ old('titre') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="auteur">Auteur</label>
+                    <input type="text" class="form-control" id="auteur" name="auteur" placeholder="Entrez le nom de l'auteur" value="{{ old('auteur') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="annee">Promotion</label>
+                        <select name="id_promotion" class="form-control">
+                            <option value="">Les promotions</option>
+                            @foreach($promotions as $promotion)
+                                <option value="{{ $promotion->id }}">{{ $promotion->promotion }}</option>
+                            @endforeach
+                        </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="domaine">Filière</label>
+                        <select class="form-control" id="filiere" name="filiere">
+                            <option value="">Toutes les Filières</option>
+                            @foreach($filieres as $filiere)
+                                <option value="{{ $filiere->id }}">{{ $filiere->filiere }}</option>
+                            @endforeach
+                        </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="diplome">Diplôme</label>
+                    <select name="diplome" id="diplome" class="form-control">
+                        <option value="">Tous les diplômes</option>
+                        @foreach($diplomes as $diplome)
+                            <option value="{{ $diplome->id }}">{{ $diplome->diplome }}</option>
+                        @endforeach
+                    </select> 
+                </div>
+                <div class="col-md-2">
+                    <div>
+                        <label for="diplome">Appréciation</label>
+                        <select name="appreciation" class="form-control">
+                            <option value=""> Appréciation</option>
+                            <option value="excellent" >Excellent</option>
+                            <option value="tres_bien" >Très bien</option>
+                            <option value="bien" >Bien</option>
+                            <option value="moyen" >Moyen</option>
+                            <option value="insuffisant">Insuffisant</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="admin" value="1">
+                    <input type="hidden" name="page" value="{{$page}}">
+                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                </form>
+                </div>
+            </div>
+            <br>
+        </div>
         @if ($page === 'yes')
             <form action="{{ route('memoire.publier') }}" method="post">
                 @csrf

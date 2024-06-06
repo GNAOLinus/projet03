@@ -122,6 +122,4 @@ return [
         'auth_token' => env('TWILIO_AUTH_TOKEN'),
         'whatsapp_from' => env('TWILIO_WHATSAPP_FROM'),
     ],
-    Maatwebsite\Excel\ExcelServiceProvider::class,
-    'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 ];

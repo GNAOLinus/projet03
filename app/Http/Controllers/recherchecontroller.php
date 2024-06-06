@@ -26,6 +26,7 @@ class RechercheController extends Controller
         $auteur = $request->input('auteur');
         $promotion = $request->input('id_promotion');
         $filiere = $request->input('filiere');
+        $appreciation = $request->input('appreciation');
         $diplome= $request->input('diplome');
         // Construire la requête en fonction des paramètres fournis
         $query = Memoire::query();
@@ -56,15 +57,25 @@ class RechercheController extends Controller
         if ($diplome) {
             $query->where('id_diplome', $diplome);
         }
+        if ($appreciation) {
+            $query->where('appreciation', $appreciation);
+        }
 
         // Exécuter la requête
         $memoires = $query->orderBy('created_at', 'desc')->paginate(25);
         $filieres = Filiere::all();
         $promotions = promotion::all();
         $diplomes= TypeDiplome::all();
-        // Retourner la vue avec les résultats de la recherche
+        if ($request->input('admin')!== '1') {
+            // Retourner la vue avec les résultats de la recherche
         return view('filtre', compact('memoires', 'filieres', 'promotions','diplomes','titre','auteur','promotion','filiere','diplome'));
-    }
+    
+        } else {
+            $page=$request->input('page');
+            return view('student.indexmemoire', compact('memoires','page','promotions','filieres','diplomes'));
+        }
+        
+        }
     public function search(Request $request)
     {
         $query = $request->input('query');

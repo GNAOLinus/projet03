@@ -34,7 +34,7 @@
                 <p>Pour tout problème, nous restons joignables.</p>
                 <p>
                     <a href="https://wa.me/22935529687?text=Bonjour%20ESM_Benin">
-                        <i class="fab fa-whatsapp"></i> 22935529687
+                        <i class="fab fa-whatsapp"></i> +22935529687
                     </a>
                 </p>
                 <p>

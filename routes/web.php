@@ -57,11 +57,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('notifications.non-lu');
 
         // Route pour afficher les notifications lues
-        Route::get('s/lu', [NotificationController::class, 'usernotificationLu'])
+        Route::get('/lu', [NotificationController::class, 'usernotificationLu'])
             ->name('notifications.lu');
 
         // Route pour afficher toutes les notifications
-        Route::get('/', [NotificationController::class, 'notification'])
+        Route::get('/non_lu', [NotificationController::class, 'notification'])
             ->name('notifications.all');
     });
 

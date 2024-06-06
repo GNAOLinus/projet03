@@ -8,6 +8,7 @@ use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
 use App\Models\Soutenance;
+use App\Models\TypeDiplome;
 use App\Models\User;
 use App\Notifications\EnvoiMemoireNotification;
 use App\Notifications\ModifMemoireNotification;
@@ -214,8 +215,11 @@ et a la fonction de sauvegarde des document */
     public function voire($page)
     {
         $memoires=Memoire::all();
+        $filieres=Filiere::all();
+        $promotions=promotion::all();
+        $diplomes=TypeDiplome::all();
         
-        return view('student.indexmemoire', compact('memoires','page'));
+        return view('student.indexmemoire', compact('memoires','page','promotions','filieres','diplomes'));
     }
 //elle permet de voir les memoires publier c'est a dire ceux qui ont la champ statut a public
     public function MemoirePublier()

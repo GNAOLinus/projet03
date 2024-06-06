@@ -18,22 +18,33 @@
                     <input type="text" class="form-control" id="auteur" name="auteur" placeholder="Entrez le nom de l'auteur" value="{{ old('auteur') }}">
                 </div>
                 <div class="row mt-4">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
                         <label for="annee">Promotion</label>
                         <select name="id_promotion" class="form-control">
-                            <option value="">Les promotions</option>
+                            <option value="">Toutes les promotions</option>
                             @foreach($promotions as $promotion)
                                 <option value="{{ $promotion->id }}">{{ $promotion->promotion }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
                         <label for="domaine">Filière</label>
                         <select class="form-control" id="filiere" name="filiere">
                             <option value="">Toutes les Filières</option>
                             @foreach($filieres as $filiere)
                                 <option value="{{ $filiere->id }}">{{ $filiere->filiere }}</option>
                             @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="diplome">Appréciation</label>
+                        <select name="appreciation" class="form-control">
+                            <option value="">Toutes les Appréciation</option>
+                            <option value="excellent" >Excellent</option>
+                            <option value="tres_bien" >Très bien</option>
+                            <option value="bien" >Bien</option>
+                            <option value="moyen" >Moyen</option>
+                            <option value="insuffisant">Insuffisant</option>
                         </select>
                     </div>
                 </div>
