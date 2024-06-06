@@ -30,17 +30,29 @@ public function store(Request $request)
         // renvoyer une erreur si le fichier n'est pas un fichier Excel
         return back()->withErrors('Le fichier téléchargé n\'est pas un fichier Excel valide.');
     }
-
-    if (File::exists(public_path('preinscriptionexcel/preinscriptions.xlsx'))) {
-        // Supprimer le fichier existant
-        File::delete(public_path('preinscriptionexcel/preinscriptions.xlsx'));
+    if ($request->ensegnant == "yes") {
+        
+        if (File::exists(public_path('preinscriptionexcel/preinscriptionsenseignant.xlsx'))) {
+            // Supprimer le fichier existant
+            File::delete(public_path('preinscriptionexcel/preinscriptionsenseignant.xlsx'));
+        }
+        // déplacer le fichier dans le dossier public/preinscriptionexcel et le renommer en "preinscriptions"
+        $request->file('fichier')->move(public_path('preinscriptionexcel'), 'preinscriptionsenseignant.xlsx');
+        // renvoyer un message de succès
+        return back()->with('success', 'Fichier de pré-inscription des enseigants téléchargé avec success');
+    } else {
+        
+        if (File::exists(public_path('preinscriptionexcel/preinscriptions.xlsx'))) {
+            // Supprimer le fichier existant
+            File::delete(public_path('preinscriptionexcel/preinscriptions.xlsx'));
+        }
+        // déplacer le fichier dans le dossier public/preinscriptionexcel et le renommer en "preinscriptions"
+        $request->file('fichier')->move(public_path('preinscriptionexcel'), 'preinscriptions.xlsx');
+        // renvoyer un message de succès
+        return back()->with('success', 'Fichier de pré-inscription des etudiants téléchargé avec success');
     }
-    // déplacer le fichier dans le dossier public/preinscriptionexcel et le renommer en "preinscriptions"
-    $request->file('fichier')->move(public_path('preinscriptionexcel'), 'preinscriptions.xlsx');
 
-
-    // renvoyer un message de succès
-    return back()->with('success', 'Fichier téléchargé et données sauvegardées');
+    
 }
 
     

@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
             SiteSeeder::class,
             TypeDiplomeSeeder::class,
             AdminSeeder::class,
-            InfoEtudiantSeeder::class,
             UserSeeder::class,
             BinomeSeeder::class,
             MemoireSeeder::class,

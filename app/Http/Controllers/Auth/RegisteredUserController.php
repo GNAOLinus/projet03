@@ -76,10 +76,11 @@ class RegisteredUserController extends Controller
         'id_site' => ['integer', 'exists:sites,id'],
         'id_filiere' => ['integer', 'exists:filieres,id'],
         'id_promotion' => ['required', 'integer', 'exists:promotions,id'],
-        'matricule' => ['sometimes', 'integer'],
         'id_diplome' => ['integer', 'exists:type_diplomes,id'],
         'phone' => ['sometimes', 'string'],
         'encryptedData' => ['required', 'string'],
+        'matricule' => ['integer'],
+      
     ]);
 
     // Vérifier si le rôle de l'utilisateur est 'étudiant' (id rôle = 2)
@@ -115,8 +116,10 @@ class RegisteredUserController extends Controller
                     ->withErrors(['message' => 'Informations incorrectes de l\'étudiant.']);
         }
 
-    } else {
-        // Création de l'utilisateur pour les rôles autres qu'étudiant
+    } elseif ($request->id_role == 3) {
+        $isPreRegistered = $this->vérificationprof($request->name, $request->matricule);
+        // Création de l'utilisateur pour les rôles autres qu'ensiagnt
+        if ($isPreRegistered) {
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -125,6 +128,30 @@ class RegisteredUserController extends Controller
             'id_site' => $request->id_site,
             'id_filiere' => $request->id_filiere,
             'id_promotion' => $request->id_promotion,
+            'phone' => $request->phone,
+        ]);
+
+        event(new Registered($user));
+        Auth::login($user);
+
+        return redirect()->route('dashboard');
+    } else {
+        // Redirection vers la vue d'enregistrement avec les erreurs
+        return redirect()->to('http://127.0.0.1:8000/register/eyJpdiI6InVKUS85UG42RHhOeWJESTlST09sOVE9PSIsInZhbHVlIjoiVElEVThsbDlJNEdrSXlKSWI5OFdpdlJSNFEwaW5ObEdaZERENlJJQm5kbGxDR3U1QkRaRktKWENPK2Fmd3hJelUvNG54azVjMkU3MXBpWmRhcU0yL0krOVV4STB3MmlVQ2R6UXpxWExEbms9IiwibWFjIjoiYzMzY2ZmMDkzZGY4MzEyZGJlZGM5MzdiYjU3ZGQ0ZTYxNThiZDFjNDM0MzcxNzVjZDdmMzMyMjA3ZjEyYTM4OCIsInRhZyI6IiJ9')
+                ->withErrors(['message' => 'Informations incorrectes de l\'étudiant.']);
+    }
+    } else
+    {
+        // Création de l'utilisateur pour le rôle admin
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'id_role' => $request->id_role,
+            'id_site' => $request->id_site,
+            'id_filiere' => $request->id_filiere,
+            'id_promotion' => $request->id_promotion,
+            'phone' => $request->phone,
         ]);
 
         event(new Registered($user));
@@ -188,6 +215,69 @@ class RegisteredUserController extends Controller
             }
            
                 
+            $reader->close();
+        } catch (ReaderException $e) {
+            Log::error('Échec de la lecture du fichier Excel de préinscription', ['error' => $e->getMessage()]);
+            return false; // Gestion d'erreur si le fichier ne peut pas être lu
+        }
+        if (in_array('1', $preRegisteredUsers)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+/**
+     * Check if the user is already pre-registered in the Excel file.
+     *
+     * @param string $name
+     * @param string $matricule
+     * @param int $filiere
+     * @param int $site
+     * @return bool
+     */
+    private function vérificationprof($name, $matricule)
+    {
+        // Vérifier si le fichier Excel est vide
+        $filePath = public_path('preinscriptionexcel\preinscriptionsenseignant.xlsx');
+        if (filesize($filePath) === 0) {
+            
+            return false; // Fichier vide, renvoyer un message
+            $messageErreur = "Le fichier de préinscription est vide. Veuillez télécharger le fichier et réessayer.";
+            return $messageErreur;
+        }
+ 
+       
+    
+        // Utiliser Spout pour lire le fichier Excel
+        try {
+            $reader = ReaderEntityFactory::createReaderFromFile($filePath);
+            $reader->open($filePath);
+            $worksheetIterator = $reader->getSheetIterator();
+            $worksheetIterator->rewind();
+            $worksheet = $worksheetIterator->current(); // Obtenir la première feuille de calcul
+    
+            // Filtrer les utilisateurs pré-inscrits
+            $preRegisteredUsers = [];
+
+            foreach ($reader->getSheetIterator() as $sheet) {
+
+                foreach ($sheet->getRowIterator() as $row) {
+        
+                    // Vérifier s'il y a au moins 4 colonnes avant d'accéder aux cellules (mesure de sécurité)
+                    if (count($row->getCells()) < 2) {
+                        continue; // Ignorer les lignes avec moins de 4 colonnes
+                    }
+        
+                    // Comparaison efficace des valeurs en utilisant array_filter et l'opérateur ternaire
+                    $isPreRegistered = array_filter([
+                        $row->getCellAtIndex(0)->getValue() == $name
+                        && $row->getCellAtIndex(1)->getValue() == $matricule
+                    ]) ? "1" : "2";
+        
+                    $preRegisteredUsers[] = $isPreRegistered;
+                }
+            }
+         
             $reader->close();
         } catch (ReaderException $e) {
             Log::error('Échec de la lecture du fichier Excel de préinscription', ['error' => $e->getMessage()]);

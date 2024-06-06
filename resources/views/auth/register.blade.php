@@ -51,6 +51,8 @@
         @if($role == 2)
         <div id="student">
             <!-- Contenu de la section student -->
+            <!--le matricle-->
+            <input type="hidden" name="id_diplome" value="{{ $diplome }}">
             <!-- Site -->
             <div class="mt-4">
                 <select name="id_site" id="site" class="form-control">
@@ -74,20 +76,22 @@
                     </span>
                 @enderror
             </div>
+
+        </div>
+        @endif
+        @if ($role == 2 || $role == 3 )
             <!-- Matricule -->
             <div class="mt-4">
                 <x-text-input id="matricule" class="block mt-1 w-full" type="text" name="matricule" :value="old('matricule')" required autofocus autocomplete="matricule" placeholder="Votre Matricule" />
                 <x-input-error :messages="$errors->get('matricule')" class="mt-2" />
             </div>
-        </div>
-        
-            </div>
         @endif
         
+        </div>
+       
         <div class="from-group">
             <input type="hidden" name="id_promotion" value="{{ $promotion }}">
             <input type="hidden" name="id_role" value="{{ $role }}">
-            <input type="hidden" name="id_diplome" value="{{ $diplome }}">
             <input type="hidden" name="encryptedData" value="{{ $encryptedData }}">
         </div>
 

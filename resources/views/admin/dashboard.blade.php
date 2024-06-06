@@ -20,7 +20,7 @@
                             <a href="{{ route('memoire.allmemoire', ['page' => 'no']) }}" class="btn btn-primary">Liste des mémoires</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="{{ route('preinscription') }}" class="btn btn-primary">Pré-inscription des étudiants</a>
+                            <a href="{{ route('preinscription') }}" class="btn btn-primary">Pré-inscription </a>
                         </li>
                         <li class="list-group-item">
                             <a href="{{ route('diplome.index') }}" class="btn btn-primary">Les diplômes</a>
