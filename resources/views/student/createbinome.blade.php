@@ -2,6 +2,7 @@
 
 @section('content')
 <main class="container mt-5">
+    
     <form action="{{ route('binomes.store') }}" method="POST">
         @csrf
 

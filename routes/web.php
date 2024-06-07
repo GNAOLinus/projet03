@@ -20,6 +20,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TypeDiplomeController;
 use App\Http\Controllers\UserController;
+use App\Models\Binome;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return view('welcome'); });
@@ -69,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('sites', SiteController::class);
         Route::resource('filieres', filiereController::class);
         Route::resource('binomes', BinomeController::class);
+        Route::post('binomes/recherche', [BinomeController::class, 'getbinomes'])->name('recherche.binomes');
         Route::get('/etudiants/{filiere_id}', [EtudiantController::class,'getEtudiantsByFiliere']);
 
 
@@ -79,6 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
         Route::resource('juries', JuryController::class);
+        Route::post('/juries/recherche',[JuryController::class,'getjuries'])->name('juries.recherche');
         Route::get('/enseigant/ ', [TeacherController::class,'getteacher']);
         Route::get('user', [UserController::class, 'index'])->name('users');
         Route::get('/recherche/etudiant', [UserController::class, 'search'])->name('etudiant.recherche');

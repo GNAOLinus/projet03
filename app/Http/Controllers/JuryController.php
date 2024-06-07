@@ -38,7 +38,7 @@ class JuryController extends Controller
         $request->validate([
             'id_enseignant1' => 'required|exists:users,id',
             'id_enseignant2' => 'required|exists:users,id',
-            'id_enseignant3' => 'required|exists:users,id',
+            'id_enseignant3' => 'exists:users,id',
             'id_filiere' => 'required|exists:filieres,id',
         ]);
 
@@ -73,7 +73,7 @@ class JuryController extends Controller
         $request->validate([
             'id_enseignant1' => 'required|exists:users,id',
             'id_enseignant2' => 'required|exists:users,id',
-            'id_enseignant3' => 'required|exists:users,id',
+            'id_enseignant3' => 'exists:users,id',
             'id_filiere' => 'required|exists:filieres,id',
         ]);
 
@@ -95,5 +95,34 @@ class JuryController extends Controller
     {
         $jury->delete();
         return redirect()->route('juries.index')->with('success', 'Jury supprimé avec succès');
+    }
+    public function getjuries(Request $request)
+    {
+        // Valider la requête
+    $request->validate([
+        'name' => 'required|string|max:255',
+    ]);
+
+    // Rechercher l'utilisateur
+    $user = User::where('name', 'like', '%' . $request->name . '%')->first();
+
+    if ($user) {
+        // Rechercher les juries
+        $juries = Jury::where('id_enseignant1', $user->id)
+            ->orWhere('id_enseignant2', $user->id)
+            ->orWhere('id_enseignant3', $user->id)
+            ->get();
+
+        if ($juries->isEmpty()) {
+            // Aucun juries trouvé
+            return redirect()->route('juries.index')->withErrors(['Aucun juries trouvé pour cet ensigant.']);
+        }
+
+        // Retourner la vue avec les juries
+        return view('teacher.jurys', compact('juries'));
+    } else {
+        // Aucun utilisateur trouvé
+        return redirect()->route('juries.index')->withErrors(['Aucun enseignant trouvé avec ce nom.']);
+    }
     }
 }

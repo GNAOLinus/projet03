@@ -72,4 +72,34 @@ class BinomeController extends Controller
 
         return redirect()->route('binomes.index')->with('success', 'Binôme supprimé avec succès.');
     }
+    public function getBinomes(Request $request)
+{
+    // Valider la requête
+    $request->validate([
+        'name' => 'required|string|max:255',
+    ]);
+
+    // Rechercher l'utilisateur
+    $user = User::where('name', 'like', '%' . $request->name . '%')->first();
+
+    if ($user) {
+        // Rechercher les binômes
+        $binomes = Binome::where('id_etudiant1', $user->id)
+            ->orWhere('id_etudiant2', $user->id)
+            ->get();
+
+        if ($binomes->isEmpty()) {
+            // Aucun binôme trouvé
+            return redirect()->route('binomes.index')->withErrors(['Aucun binôme trouvé pour cet étudiant.']);
+        }
+
+        // Retourner la vue avec les binômes
+        return view('student.binomes', compact('binomes'));
+    } else {
+        // Aucun utilisateur trouvé
+        return redirect()->route('binomes.index')->withErrors(['Aucun étudiant trouvé avec ce nom.']);
+    }
+}
+
+    
 }

@@ -68,8 +68,9 @@ class EtudiantController extends Controller
         $etudiants_avec_binome = Binome::pluck('id_etudiant1')->merge(Binome::pluck('id_etudiant2'))->toArray();
 
      // Récupérer la liste des étudiants sans binôme avec l'ID du rôle égal à 2 et les paginer
-        $etudiants = User::where('id_filiere', $id_filiere)->get()
-        ->whereNotIn('id', $etudiants_avec_binome);
+        $etudiants = User::where('id_role',2)
+        ->where('id_filiere', $id_filiere)
+        ->whereNotIn('id', $etudiants_avec_binome)->get();
     
         return response()->json($etudiants);
     }   

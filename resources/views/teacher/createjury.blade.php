@@ -47,15 +47,16 @@
 
                             <div class="form-group">
                                 <label for="id_enseignant3">Enseignant 3</label>
-                                <select class="form-control" id="id_enseignant3" name="id_enseignant3" required>
+                                <select class="form-control" id="id_enseignant3" name="id_enseignant3" >
                                     <option value="">Choisissez un enseignant</option>
                                     @foreach ($enseignants as $enseignant)
                                         <option value="{{ $enseignant->id }}" {{ isset($jury) && $jury->id_enseignant3 == $enseignant->id ? 'selected' : '' }}>{{ $enseignant->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-
-                            <button type="submit" class="btn btn-primary">{{ isset($jury) ? 'Enregistrer les modifications' : 'Créer Jury' }}</button>
+                            <div class="form-group mt-5">
+                                <button type="submit" class="btn btn-primary ">{{ isset($jury) ? 'Enregistrer les modifications' : 'Créer Jury' }}</button>
+                            </div>
                         </form>
                     </div>
                 </div>
