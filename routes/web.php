@@ -26,7 +26,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () { return view('welcome'); });
 Route::get('/register/{vi}', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/profile/plus', [UserController::class, 'profile'])->name('profile');
-
+Route::get('conditions_d_utilisation', function () {
+    return view('condition');
+});
 
 Route::prefix('/recherche')->group(function(){
     Route::get('/filtre', [recherchecontroller::class, 'show'])->name('recherche.filtre');

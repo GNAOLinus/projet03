@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form id="registration-form" method="POST" action="{{ route('register') }}">
         @csrf
         <!-- Display general errors -->
         @if ($errors->any())
@@ -41,17 +41,18 @@
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
+
+        <!-- Phone Number -->
         <div class="mt-4">
             <x-text-input id="phone" class="block mt-1 w-full"
                             type="text"
-                            name="phone" required autocomplete="phone" placeholder="numero de telephone" />
-
+                            name="phone" required autocomplete="phone" placeholder="Numéro de téléphone" />
             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
+
         @if($role == 2)
         <div id="student">
             <!-- Contenu de la section student -->
-            <!--le matricle-->
             <input type="hidden" name="id_diplome" value="{{ $diplome }}">
             <!-- Site -->
             <div class="mt-4">
@@ -76,9 +77,9 @@
                     </span>
                 @enderror
             </div>
-
         </div>
         @endif
+
         @if ($role == 2 || $role == 3 )
             <!-- Matricule -->
             <div class="mt-4">
@@ -86,14 +87,22 @@
                 <x-input-error :messages="$errors->get('matricule')" class="mt-2" />
             </div>
         @endif
-        
-        </div>
-       
+
         <div class="from-group">
             <input type="hidden" name="id_promotion" value="{{ $promotion }}">
             <input type="hidden" name="id_role" value="{{ $role }}">
             <input type="hidden" name="encryptedData" value="{{ $encryptedData }}">
         </div>
+
+        <!-- Terms and Conditions -->
+        <div class="mt-4">
+            <label for="terms">
+                <input id="terms" type="checkbox" name="terms" required>
+                <span style="color: yellow;">J'accepte les</span> <a href="{{ url('conditions_d_utilisation') }}" target="_blank">Conditions d'Utilisation</a>
+            </label>
+            <x-input-error :messages="$errors->get('terms')" class="mt-2" />
+        </div>
+        
 
         <div class="flex items-center justify-end mt-4">
             <a href="{{ route('login') }}" class="inline-flex px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition">
@@ -105,4 +114,14 @@
             </x-primary-button>
         </div>
     </form>
+
+    <script>
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            var termsCheckbox = document.getElementById('terms');
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                alert("Vous devez accepter les conditions d'utilisation avant de soumettre le formulaire.");
+            }
+        });
+    </script>
 </x-guest-layout>
