@@ -1,14 +1,24 @@
 @extends('dashboard')
 @section('content')
 <div class="container">
-    <h1>Programmer les Soutenances</h1>
+    <h1 style="text-align: center;">Programmer les Soutenances</h1>
     <div id="error-container"></div>
 
-    @if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
+    @if (session()->has('success'))
+    <div class="alert alert-success" role="alert">
+      {{ session()->get('success') }}
     </div>
-    @endif
+  @endif
+
+  @if ($errors->any())
+    <div class="alert alert-danger" role="alert">
+      <ul>
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+@endif
 
     <div class="row">
         <div class="col-md-6">
@@ -24,14 +34,17 @@
                     @endforeach
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="id_jury">Jury</label>
                 <select name="id_jury" id="id_jury" class="form-control" required>
                     <option value="">Choisir un jury</option>
                     @foreach ($jurys as $jury)
                     <option value="{{ $jury->id }}" {{ old('id_jury') == $jury->id ? 'selected' : '' }}>
-                        {{ $jury->enseignant1->name }}/{{ $jury->enseignant2->name }}/{{ $jury->enseignant3->name }}
+                        {{ $jury->enseignant1->name }}/{{ $jury->enseignant2->name }}/@if ($jury->id_enseignant3 === null)
+                        <p>Non definit</p>
+                    @else
+                        {{ $jury->enseignant3->name }}</td>
+                    @endif
                     </option>
                     @endforeach
                 </select>

@@ -1,8 +1,23 @@
 @extends('dashboard')
 
 @section('content')
+@if (session()->has('success'))
+<div class="alert alert-success" role="alert">
+  {{ session()->get('success') }}
+</div>
+@endif
+
+@if ($errors->any())
+<div class="alert alert-danger" role="alert">
+  <ul>
+    @foreach ($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+  </ul>
+</div>
+@endif
 <div class="container mt-5">
-    <h1>Gestion des Mémoires Publiés</h1>
+    <h1 style="text-align: center;">Gestion des Mémoires Publiés</h1>
 
     <div class="row">
         @foreach ($filieres as $filiere)
@@ -33,7 +48,7 @@
                                                 <td>{{ substr($memoire->resume, 0, 50) }}</td>
                                                 <td>{{ $memoire->binome->etudiant1->name }} et {{ $memoire->binome->etudiant2->name }}</td>
                                                 <td>
-                                                    <form action="" method="post">
+                                                    <form action="{{ route('memoire.retirer') }}" method="post">
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $memoire->id }}">
                                                         <button type="submit" class="btn btn-danger">Retirer</button>

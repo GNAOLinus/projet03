@@ -2,6 +2,21 @@
 
 @section('content')
     <div class="container">
+        @if (session()->has('success'))
+        <div class="alert alert-success" role="alert">
+          {{ session()->get('success') }}
+        </div>
+      @endif
+    
+      @if ($errors->any())
+        <div class="alert alert-danger" role="alert">
+          <ul>
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+    @endif
         <h1>Liste des mémoires</h1>
         <div class="container">
             <form action="{{ route('recherche.traitement') }}" method="get">
@@ -73,6 +88,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>N</th>
                     <th>Titre</th>
                     <th>Description</th>
                     <th>Fichier</th>
@@ -89,6 +105,7 @@
                     @if ($page === 'yes')
                         @if ($memoire->statut === null && $memoire->appreciation !== null) 
                             <tr>
+                                <th>{{ $loop->iteration }}</th>
                                 <td>{{ $memoire->titre }}</td>
                                 <td>{{ $memoire->resume }}</td>
                                 <td><a href="{{ asset('memoires/' . $memoire->fichier) }}">voir le doc</a></td>
@@ -108,6 +125,7 @@
                         @endif
                     @else
                         <tr>
+                            <th>{{ $loop->iteration }}</th>
                             <td>{{ $memoire->titre }}</td>
                             <td>{{ $memoire->resume }}</td>
                             <td><a href="{{ asset('memoires/' . $memoire->fichier) }}">voir le doc</a></td>

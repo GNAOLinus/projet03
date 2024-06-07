@@ -2,6 +2,21 @@
 
 @section('content')
     <div class="container mt-4">
+        @if (session()->has('success'))
+        <div class="alert alert-success" role="alert">
+          {{ session()->get('success') }}
+        </div>
+      @endif
+    
+      @if ($errors->any())
+        <div class="alert alert-danger" role="alert">
+          <ul>
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+    @endif
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
@@ -47,7 +62,7 @@
 
                             <div class="form-group">
                                 <label for="id_enseignant3">Enseignant 3</label>
-                                <select class="form-control" id="id_enseignant3" name="id_enseignant3" >
+                                <select class="form-control" id="id_enseignant3" name="id_enseignant3">
                                     <option value="">Choisissez un enseignant</option>
                                     @foreach ($enseignants as $enseignant)
                                         <option value="{{ $enseignant->id }}" {{ isset($jury) && $jury->id_enseignant3 == $enseignant->id ? 'selected' : '' }}>{{ $enseignant->name }}</option>

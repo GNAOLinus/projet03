@@ -21,7 +21,7 @@
                 <h2 style="text-align: center;">Liste des jurys</h2>
                 <div class="container">
                 
-                    <form action="{{route('admin.recherche.juries')}}" method="post">
+                    <form action="{{route('juries.recherche')}}" method="post">
                         @csrf
                         <div class="form-group">
                             <div class="row">
@@ -42,7 +42,7 @@
                 <table class="table mt-5">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>N</th>
                             <th>Enseignant 1</th>
                             <th>Enseignant 2</th>
                             <th>Enseignant 3</th>
@@ -52,10 +52,16 @@
                     <tbody>
                         @foreach($juries as $jury)
                         <tr>
-                            <td>{{ $jury->id }}</td>
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $jury->enseignant1->name }}</td>
                             <td>{{ $jury->enseignant2->name }}</td>
-                            <td>{{ $jury->enseignant3->name }}</td>
+                            <td>@if ($jury->id_enseignant3 === null)
+                                <p>Non definit</p>
+                            @else
+                                {{ $jury->enseignant3->name }}</td>
+                            @endif
+                                
+                                
                             <td>
                                 <a href="{{ route('juries.edit', ['jury' => $jury->id]) }}" class="btn btn-primary">Modifier</a>
                                 <form action="{{ route('juries.destroy', ['jury' => $jury->id]) }}" method="POST" style="display: inline-block;">

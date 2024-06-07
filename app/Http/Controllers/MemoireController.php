@@ -193,7 +193,7 @@ et a la fonction de sauvegarde des document */
         if ($request->isMethod('post')) {
             // Récupérer les IDs des mémoires à publier depuis le formulaire
             $memoireIds = $request->input('memoire', []);
-
+            
             // Mettre à jour le statut des mémoires sélectionnées en public
             Memoire::whereIn('id', $memoireIds)->update(['statut' => 'public']);
             
@@ -204,6 +204,33 @@ et a la fonction de sauvegarde des document */
             return redirect()->back()->with('error', 'Une erreur s\'est produite. Veuillez réessayer.');
         }
     }
+    // fonction pour retirer le memoire de la baque de memoire
+    public function retirer(Request $request)
+    {
+        // Vérifier si le formulaire a été soumis
+        if ($request->isMethod('post')) {
+            // Récupérer l'ID du mémoire à retirer depuis le formulaire
+            $memoireId = $request->input('id');
+    
+            // Trouver le mémoire correspondant
+            $memoire = Memoire::find($memoireId);
+            if ($memoire) {
+                // Mettre à jour le statut du mémoire en null
+                $memoire->statut = null;
+                $memoire->save();
+    
+                // Rediriger avec un message de succès ou afficher une vue de succès
+                return redirect()->route('memoire.allmemoire', ['page' => 'yes'])->with('success', 'Le mémoire a été retiré avec succès.');
+            } else {
+                // Rediriger avec un message d'erreur ou afficher une vue d'erreur si le mémoire n'est pas trouvé
+                return redirect()->back()->with('error', 'Mémoire non trouvé.');
+            }
+        } else {
+            // Rediriger avec un message d'erreur ou afficher une vue d'erreur si le formulaire n'est pas soumis
+            return redirect()->back()->with('error', 'Une erreur s\'est produite. Veuillez réessayer.');
+        }
+    }
+    
     // elle permet de voir tous les memoire
     public function show(Request $request)
     {

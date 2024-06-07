@@ -38,7 +38,7 @@ class JuryController extends Controller
         $request->validate([
             'id_enseignant1' => 'required|exists:users,id',
             'id_enseignant2' => 'required|exists:users,id',
-            'id_enseignant3' => 'exists:users,id',
+            'id_enseignant3' => 'nullable|exists:users,id',
             'id_filiere' => 'required|exists:filieres,id',
         ]);
 
@@ -73,7 +73,7 @@ class JuryController extends Controller
         $request->validate([
             'id_enseignant1' => 'required|exists:users,id',
             'id_enseignant2' => 'required|exists:users,id',
-            'id_enseignant3' => 'exists:users,id',
+            'id_enseignant3' => 'nullable|exists:users,id',
             'id_filiere' => 'required|exists:filieres,id',
         ]);
 

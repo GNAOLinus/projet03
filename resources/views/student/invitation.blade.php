@@ -1,6 +1,21 @@
 @extends('dashboard')
 @section('content')
 <main class="container mt-5">
+    @if (session()->has('success'))
+    <div class="alert alert-success" role="alert">
+      {{ session()->get('success') }}
+    </div>
+  @endif
+
+  @if ($errors->any())
+    <div class="alert alert-danger" role="alert">
+      <ul>
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+@endif
     <div>
         <form class="d-flex" action="{{ route('etudiant.recherche') }}" method="GET">
             <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search" value="{{ request('query') }}">

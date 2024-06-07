@@ -95,6 +95,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::get('memoire/all/{page}', [MemoireController::class, 'voire'])->name('memoire.allmemoire');
         Route::post('/memoire/publier', [MemoireController::class,'publication'])->name('memoire.publier');
+        Route::post('/memoire/retirer', [MemoireController::class,'retirer'])->name('memoire.retirer');
         Route::get('/memoire/publier/gestion',[MemoireController::class,'MemoirePublier'])->name('memoirepublier');
         Route::get('/compare/memoire/{id}', [MemoireController::class, 'compare']);
 

@@ -1,6 +1,21 @@
 @extends('dashboard')
 @section('content')
 <div class="container">
+    @if (session()->has('success'))
+    <div class="alert alert-success" role="alert">
+      {{ session()->get('success') }}
+    </div>
+  @endif
+
+  @if ($errors->any())
+    <div class="alert alert-danger" role="alert">
+      <ul>
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+@endif
     <div class="row">
         <div class="col-md-6">
             <a href="{{ route('memoire.create') }}" class="btn btn-primary @if(isset($memoire) || !isset($binome)) disabled @endif">Ajouter mémoire</a>
