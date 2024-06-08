@@ -33,7 +33,8 @@
                                     <tr>
                                         <th>N</th>
                                         <th>Mémoire</th>
-                                        <th>Site</th>
+                                        <th>Site  de soutenance</th>
+                                        <th>jury</th>
                                         <th>Date de soutenance</th>
                                         <th>Heure de soutenance</th>
                                     </tr>
@@ -45,11 +46,17 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $soutenance->memoire->titre }}</td>
                                         <td>{{ $soutenance->site->site }}</td>
+                                        <td>
+                                            {{ $soutenance->jury->enseignant1->name }}/{{ $soutenance->jury->enseignant2->name }}/@if ($soutenance->jury->enseignant3 === null)
+                                                <p>Non definit</p>
+                                                    @else
+                                                        {{ $soutenance->jury->enseignant3->name }}</td>
+                                                    @endif
+                                        </td>
                                         <td>{{ $soutenance->date_soutenance }}</td>
                                         <td>{{ $soutenance->heurs_soutenance }}</td>
                                     </tr>
-                                    @else
-                                        <p>Aucune soutenace programmer pour la {{$filiere->filiere}}</p>
+                                    
                                     @endif
                                        
                                     @endforeach

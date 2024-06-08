@@ -41,7 +41,7 @@
                     @foreach ($jurys as $jury)
                     <option value="{{ $jury->id }}" {{ old('id_jury') == $jury->id ? 'selected' : '' }}>
                         {{ $jury->enseignant1->name }}/{{ $jury->enseignant2->name }}/@if ($jury->id_enseignant3 === null)
-                        <p>Non definit</p>
+                        <p>Non definit</p>/{{ $jury->filiere->filiere }}
                     @else
                         {{ $jury->enseignant3->name }}</td>
                     @endif

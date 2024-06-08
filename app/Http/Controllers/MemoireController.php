@@ -147,7 +147,7 @@ et a la fonction de sauvegarde des document */
         $memoire->update($request->only('appreciation', 'note'));
     
         // Redirection vers la page précédente avec un message de succès
-        return redirect()->back()->with('success', 'Appréciation enregistrée avec succès.');
+        return redirect()->route('teacher.dashboard', ['id_edit' => 'null'])->with('success', 'Appréciation enregistrée avec succès.');
     }
     
 //grace a cett fonction on peut voir les memoire et avoir plus de détail avant le télchagement
@@ -182,7 +182,7 @@ et a la fonction de sauvegarde des document */
             'id_promotion' => 'required|int',
             'id_filiere'=> 'required|int',
             'id_diplome'=> 'required|int',
-            'id_binome'=> 'int',
+            'id_binome'=> 'required|int',
             'statut'=>'string',
         ]);
     }
@@ -264,6 +264,7 @@ et a la fonction de sauvegarde des document */
         $memoire->resume = $request->resume;
         $memoire->encadreur = $request->encadreur;
         $memoire->id_promotion = $request->id_promotion;
+        $memoire->id_diplome = $request->id_diplome;
         $memoire->id_filiere = $request->id_filiere;
         $memoire->id_binome = $request->id_binome;
     }

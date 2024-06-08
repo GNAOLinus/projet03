@@ -37,18 +37,9 @@
       <label for="encadreur">Nom encadreur</label>
       <input type="text" name="encadreur" id="encadreur" class="form-control" required value="{{ $memoire->encadreur ?? '' }}">
     </div>
-
-    <div class="form-group">
-      <label for="promotion">Promotion</label>
-      <select name="id_promotion" id="promotion" class="form-control" required value="{{ $memoire->promotion ?? '' }}">
-      <option value="">choisir une promotion</option>
-      @foreach ($promotions as $promotion)
-          <option value="{{$promotion->id}}">{{$promotion->promotion}}</option>
-      @endforeach
-      </select>
-    </div><br><br>
-
+<br>
     <input type="hidden" name="id_diplome" value="{{Auth::user()->id_diplome}}"> 
+    <input type="hidden" name="id_promotion" value="{{Auth::user()->id_promotion}}"> 
     <input type="hidden" name="id_binome" value="{{$binome->id}}"> 
     <input type="hidden" name="id_filiere" value="{{Auth::user()->id_filiere}}"> 
     <button type="submit" class="btn btn-primary">

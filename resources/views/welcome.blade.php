@@ -1,9 +1,17 @@
 @extends('layouts.base')
 
-@section('titre', 'Bienvenue')
+@section('titre')
+<br><br><br><br>
+    <h1 style="font-size: 6em; color: #3498db; text-align: center; margin-bottom: 20px;">Bienvenue</h1>
+@endsection
 
-@section('paragraphe', 'Bienvenue dans la banque de mémoire de ESM-Bénin')
-<br>
+@section('paragraphe')
+    <p id="transparant "style="font-size: 2em; color:hsl(210, 33%, 98%); text-align: center; margin-bottom: 20px;">Bienvenue dans la banque de mémoire de ESM-Bénin</p>
+    <br>
+    <br>
+    <br>
+@endsection
+
 @section('content')
     <div class="container my-5">
         <div class="row">

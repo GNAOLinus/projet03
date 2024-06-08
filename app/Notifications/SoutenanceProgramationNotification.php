@@ -2,9 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Channels\WhatsAppChannel;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -29,7 +27,7 @@ class SoutenanceProgramationNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-    return ['mail','database', /*WhatsAppChannel::class*/];
+    return ['mail','database'];
     }
 
     /**
@@ -63,18 +61,6 @@ class SoutenanceProgramationNotification extends Notification
             'message' => 'Votre êtes convoqué a une soutenance .',
         ];
     }
-        /**
-     * Get the WhatsApp representation of the notification.
-     *
-     * @return string
-     */
-    /*public function toWhatsApp(object $notifiable): string
-    {
-        return 'La soutenance pour le mémoire ' . $this->soutenanceDetails['titre'] . ' a été programmée.' .
-            ' Date : ' . $this->soutenanceDetails['date_soutenance'] .
-            ' Heure : ' . $this->soutenanceDetails['heurs_soutenance'] .
-            ' Lieu : ' . $this->soutenanceDetails['site_nom'] . ' au ' . $this->soutenanceDetails['site_address'] .
-            ' Merci d\'utiliser notre application!';
-    }*/
+    
 
 }

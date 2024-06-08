@@ -30,6 +30,7 @@ class TeacherController extends Controller
 
         return view('teacher.dashboard', ['soutenances' => $soutenances, 'message' => $message, 'id_edit' => $id_edit]);
     }
+    
     public function generateLink($role, $promotion, $diplome)
 {
     if ($diplome === '0') {

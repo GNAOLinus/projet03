@@ -78,7 +78,7 @@ class SoutenanceController extends Controller
             $soutenanceDetails['titre'] = $memoire->titre; // Ajout de l'addresse du site
     
             $jury = Jury::findOrFail($validated['id_jury']);
-            $enseignant1 = User::findOrFail($jury->id_enseignant1);
+            $enseignant1 = User::findOrFail($jury->id_enseignant1); 
             $enseignant2 = User::findOrFail($jury->id_enseignant2);
      
             // Notifier enseignant3 si existant

@@ -21,58 +21,56 @@
             </tr>
         </thead>
         <tbody>
-            {{ $message }}
             @foreach($soutenances as $soutenance)
-                <tr>
-                    <td>{{ $soutenance->memoire->titre }}</td>
-                    <td>
-                        @if($soutenance->memoire->binome)
-                            {{ $soutenance->memoire->binome->etudiant1->name }} et {{ $soutenance->memoire->binome->etudiant2->name }}
-                        @else
-                            Aucun binôme associé
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ asset('memoires/' . $soutenance->memoire->fichier) }}">Voir le document</a>
-                    </td>
-                    <td>
-                        @if($id_edit === $soutenance->id_memoire || $soutenance->memoire->note !== null)
-                        <form action="{{ route('memoires.updateAppreciation', ['id' => $soutenance->memoire->id]) }}" method="post">
-                            @csrf
-                            @method('PUT')
-                            <div class="form-group">
-                                <select name="appreciation" class="form-control" required>
-                                    <option value="">Choisir une appréciation</option>
-                                    <option value="excellent" {{ $soutenance->memoire->appreciation == 'excellent' ? 'selected' : '' }}>Excellent</option>
-                                    <option value="tres_bien" {{ $soutenance->memoire->appreciation == 'tres_bien' ? 'selected' : '' }}>Très bien</option>
-                                    <option value="bien" {{ $soutenance->memoire->appreciation == 'bien' ? 'selected' : '' }}>Bien</option>
-                                    <option value="moyen" {{ $soutenance->memoire->appreciation == 'moyen' ? 'selected' : '' }}>Moyen</option>
-                                    <option value="insuffisant" {{ $soutenance->memoire->appreciation == 'insuffisant' ? 'selected' : '' }}>Insuffisant</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="note">Note :</label>
-                                <input type="number" name="note" id="note" class="form-control" min="0" max="20" value="{{ $soutenance->memoire->note ?? '' }}" required>
-                            </div>
-                           
-                            
-                        @elseif($soutenance->memoire->note !== null && $id_edit !== $soutenance->id_memoire)
-                            <span>Appréciation : {{ $soutenance->memoire->appreciation }}</span><br>
-                            <span>Note : {{ $soutenance->memoire->note }}</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if ($id_edit === $soutenance->id_memoire || $soutenance->memoire->note !== null)
-                        <button type="submit" class="btn btn-primary">{{ $soutenance->memoire->note !== null ? 'Editer l\'appréciation' : 'Enregistrer l\'appréciation' }}</button>
-                    </form>
-                        @elseif($soutenance->memoire->note !== null)
-                            <form action="{{ route('teacher.dashboard', ['id_edit' => $soutenance->id_memoire]) }}" method="get">
+                @if($soutenance->memoire->statut !== 'public')
+                    <tr>
+                        <td>{{ $soutenance->memoire->titre }}</td>
+                        <td>
+                            @if($soutenance->memoire->binome)
+                                {{ $soutenance->memoire->binome->etudiant1->name }} et {{ $soutenance->memoire->binome->etudiant2->name }}
+                            @else
+                                Aucun binôme associé
+                            @endif
+                        </td>
+                        <td>
+                            <a href="{{ asset('memoires/' . $soutenance->memoire->fichier) }}">Voir le document</a>
+                        </td>
+                        <td>
+                            <form action="{{ route('memoires.updateAppreciation', ['id' => $soutenance->id_memoire]) }}" method="post">
                                 @csrf
-                                <button type="submit" class="btn btn-primary">Editer l'appréciation</button>
+                                @method('PUT')
+                                @if(is_null($soutenance->memoire->note) || $id_edit == $soutenance->id_memoire)
+                                    <div class="form-group">
+                                        <select name="appreciation" class="form-control" required>
+                                            <option value="">Appréciation</option>
+                                            <option value="excellent" {{ $soutenance->memoire->appreciation == 'excellent' ? 'selected' : '' }}>Excellent</option>
+                                            <option value="tres_bien" {{ $soutenance->memoire->appreciation == 'tres_bien' ? 'selected' : '' }}>Très bien</option>
+                                            <option value="bien" {{ $soutenance->memoire->appreciation == 'bien' ? 'selected' : '' }}>Bien</option>
+                                            <option value="moyen" {{ $soutenance->memoire->appreciation == 'moyen' ? 'selected' : '' }}>Moyen</option>
+                                            <option value="insuffisant" {{ $soutenance->memoire->appreciation == 'insuffisant' ? 'selected' : '' }}>Insuffisant</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="note">Note :</label>
+                                        <input type="number" name="note" id="note" class="form-control" min="0" max="20" value="{{ $soutenance->memoire->note ?? '' }}" required>
+                                    </div>
+                                @else
+                                    <span>Appréciation : {{ $soutenance->memoire->appreciation }}</span><br>
+                                    <span>Note : {{ $soutenance->memoire->note }}</span>
+                                @endif
+                        </td>
+                        <td>
+                            @if (is_null($soutenance->memoire->note))
+                                <button type="submit" class="btn btn-primary">Enregistrer l'appréciation</button>
+                            @elseif($id_edit == $soutenance->id_memoire)
+                                <button type="submit" class="btn btn-primary">Valider</button>
                             </form>
-                        @endif
-                    </td>
-                </tr>
+                            @else
+                                <a href="/teacher/{{$soutenance->id_memoire}}"  class="btn btn-primary">Editer l'appréciation</a>
+                            @endif
+                        </td>
+                    </tr>
+                @endif
             @endforeach
         </tbody>
     </table>
