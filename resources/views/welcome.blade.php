@@ -6,7 +6,7 @@
 @endsection
 
 @section('paragraphe')
-    <p id="transparant "style="font-size: 2em; color:hsl(210, 33%, 98%); text-align: center; margin-bottom: 20px;">Bienvenue dans la banque de mémoire de ESM-Bénin</p>
+    <p id="transparant "style="font-size: 2em; color:hsl(210, 33%, 98%); text-align: center; margin-bottom: 20px;">Dans la banque de mémoire de ESM-Bénin</p>
     <br>
     <br>
     <br>

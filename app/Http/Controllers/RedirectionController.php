@@ -16,6 +16,8 @@ class RedirectionController extends Controller
                 return redirect()->route('student.dashboard');
             case '3':
                 return redirect()->route('teacher.dashboard', ['id_edit' => 'null']);
+            case '4':
+                return redirect()->route('admin.dashboard');
             default:
                 return view('welcome');
         }

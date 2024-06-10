@@ -63,7 +63,7 @@ $layout = auth()->check() ? 'dashboard' : 'layouts.base';
             <!-- Formulaire pour permettre à l'utilisateur connecté de confirmer l'invitation reçue -->
             <form action="{{ route('confirmer_invitation') }}" method="post" class="ms-3">
                 @csrf
-                <input type="hidden" name="invitation_id" value="{{ $invitation_id }}">
+                <input type="hidden" name="invitation_id" value="{{ $invitation->invitation_id }}">
                 <button type="submit" class="btn btn-secondary">Confirmer</button>
             </form>
             @elseif($invitation === 'envoyée')

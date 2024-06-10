@@ -3,7 +3,6 @@
 @section('paragraphe')
 <br>
 <br>
-
 <div class="container">
     @if (session()->has('success'))
     <div class="alert alert-success" role="alert">
@@ -82,7 +81,7 @@
 @endsection
 
 @section('content')
-<br>
+
 <div class="container">
     <div class="alert alert-danger" role="alert">
         <x-info></x-info>

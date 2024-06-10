@@ -18,10 +18,11 @@
             </div>
   @endif
   <div class="row justify-content-center">
+    
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h5>Télécharger le fichier de préinscription des etudiants</h5>
+          <h5>Télécharger les fichier de préinscription </h5>
         </div>
         <div class="card-body">
           <form action="{{ route('preinscription.store') }}" method="POST" enctype="multipart/form-data">
@@ -30,25 +31,15 @@
               <label for="fichierpreinscription">Fichier de préinscription</label>
               <input type="file" name="fichier" class="form-control-file" id="fichierpreinscription">
             </div>
-            <button type="submit" class="btn btn-primary">Télécharger</button>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h5>Télécharger le fichier de préinscription des enseignants</h5>
-        </div>
-        <div class="card-body">
-          <form action="{{ route('preinscription.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group">
-              <label for="fichierpreinscription">Fichier de préinscription</label>
-              <input type="file" name="fichier" class="form-control-file" id="fichierpreinscription">
+            <div class="form-group mt-3">
+              <select name="role" id="" class="form-control">
+                <option value=""> Sélèctionner Type d'utilisteur à pré-inscrir</option>
+                <option value="1">Admin</option>
+                <option value="2">Etudiant </option>
+                <option value="3">Enseignant</option>
+              </select>
             </div>
-            <input type="hidden" name="ensegnant" value="yes">
-            <button type="submit" class="btn btn-primary">Télécharger</button>
+            <button type="submit" class="btn btn-primary mt-3">Télécharger</button>
           </form>
         </div>
       </div>
