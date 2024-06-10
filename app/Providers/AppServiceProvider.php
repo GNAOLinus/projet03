@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\OpenAIService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
-use Twilio\Rest\Client;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,10 +13,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Client::class, function ($app) {
-            return new Client(
-                config('services.twilio.sid'),
-                config('services.twilio.auth_token')
+        $this->app->singleton(OpenAIService::class, function ($app) {
+            return new OpenAIService(
+                config('openai.project_id'),
+                config('openai.location'),
+                config('openai.model_name')
             );
         });
     }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BinomeController;
+use App\Http\Controllers\comparaisonController;
 use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\filiereController;
 use App\Http\Controllers\InvitationController;
@@ -38,7 +39,7 @@ Route::prefix('/recherche')->group(function(){
 
 Route::get('/memoire/download/{id}', [MemoireController::class, 'download'])->name('memoire.download');
 Route::get('/memoires/{memoire}/previsualiser', [MemoireController::class, 'previsualiser'])->name('memoires.previsualiser');
-
+Route::get('/compare/{id}', [comparaisonController::class, 'compare']);
  
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/generate-link/{role}/{promotion}/{diplome}', [TeacherController::class, 'generateLink'])->name('generate.link');

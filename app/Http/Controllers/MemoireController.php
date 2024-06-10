@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Binome;
-use App\Models\evaluation;
+use App\Http\Controllers\ComparaisonController;
 use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
@@ -12,7 +12,6 @@ use App\Models\TypeDiplome;
 use App\Models\User;
 use App\Notifications\EnvoiMemoireNotification;
 use App\Notifications\ModifMemoireNotification;
-use App\Services\OpenAIService;
 use Illuminate\Http\Request;
 
 class MemoireController extends Controller
@@ -60,10 +59,15 @@ class MemoireController extends Controller
         $this->uploadMemoireFile($memoire, $request);
 
         $memoire->save();
-        // Appeler la fonction compare avec le mémoire nouvellement créé
-       // $this->compare($memoire);
+
+        $memoireId = $memoire->id;
+        // Appeler la fonction compare du comparaisonController
+            // $comparaisonController = app(ComparaisonController::class);
+              //  $comparaisonController->compare($memoireId);
 
        $binomeId = $request->input('id_binome');
+
+
        if ($binomeId) {
            $binome = Binome::findOrFail($binomeId);
        
@@ -279,76 +283,5 @@ et a la fonction de sauvegarde des document */
         }
     }
 
-    protected $openAIService;
-
-    public function __construct(OpenAIService $openAIService)
-    {
-        $this->openAIService = $openAIService;
-    }
-
-    // Elle se base sur une API de GPT OpenAI pour comparer deux mémoires et donner une note sur 10
-    public function compare($id)
-    {
-        $memoire1 = Memoire::findOrFail($id);
-
-        // Récupérer tous les mémoires de la même filière pour la comparaison
-        $memoires = Memoire::where('id_filiere', $memoire1->id_filiere)->get();
-        $results = [];
-
-        // Vérifier si des mémoires de la même filière ont été trouvés
-        if ($memoires->isNotEmpty()) {
-            $titre1 = $memoire1->titre;
-            $resume1 = $memoire1->resume;
-
-            foreach ($memoires as $memoire2) {
-                // Ne pas comparer le mémoire à lui-même
-                if ($memoire1->id === $memoire2->id) {
-                    continue;
-                }
-
-                // Extraire le titre et le résumé du deuxième mémoire
-                $titre2 = $memoire2->titre;
-                $resume2 = $memoire2->resume;
-
-                // Comparer les deux mémoires
-                $similarityScore = $this->openAIService->compareMemoires($titre1, $resume1, $titre2, $resume2);
-
-                // Stocker le résultat de la comparaison
-                if (!isset($similarityScore['error'])) {
-                    $results[] = [
-                        'memoire1' => $memoire1,
-                        'memoire2' => $memoire2,
-                        'similarity_score' => $similarityScore,
-                    ];
-                } else {
-                    // Gérer l'erreur de comparaison
-                    return response()->json(['error' => $similarityScore['error']], 400);
-                }
-            }
-
-            // Trier les résultats par score de similarité en ordre décroissant
-            usort($results, function ($a, $b) {
-                return $b['similarity_score']['score'] <=> $a['similarity_score']['score'];
-            });
-
-            // Récupérer les 5 premières meilleures évaluations
-            $topResults = array_slice($results, 0, 5);
-
-            // Enregistrer les 5 meilleures évaluations dans la base de données
-            foreach ($topResults as $i => $result) {
-                $evaluation = new Evaluation();
-                $evaluation->id_memoire = $memoire1->id;
-                $evaluation->id_rapport = $result['memoire2']->id;
-                $evaluation->setAttribute('note_rapport' . ($i + 1), $result['similarity_score']['score']);
-                $evaluation->setAttribute('justification_rapport' . ($i + 1), $result['similarity_score']['justification']);
-                $evaluation->save();
-            }
-
-            return response()->json($topResults);
-        } else {
-            // Si aucun mémoire de la même filière n'est trouvé, retourner une erreur ou un message approprié
-            return response()->json(['error' => 'Aucun mémoire de la même filière trouvé pour la comparaison.'], 404);
-        }
-    }
 
 }

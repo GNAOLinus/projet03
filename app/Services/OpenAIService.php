@@ -1,70 +1,76 @@
 <?php
+
 namespace App\Services;
 
-use OpenAI;
-use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Google\Auth\ApplicationDefaultCredentials;
+use Google\Auth\OAuth2;
+use GuzzleHttp\HandlerStack;
 
 class OpenAIService
 {
     protected $client;
+    protected $projectId;
+    protected $location;
+    protected $modelName;
 
-    public function __construct()
+    public function __construct($projectId, $location, $modelName)
     {
-        $apiKey = env('OPENAI_API_KEY');
-        $this->client = OpenAI::client($apiKey);
-    }
-    public function compareMemoires($titre1, $resume1, $titre2, $resume2) 
-    {
-        $query ='salut';
-
-        $response = $this->client->completions()->createStreamed([
-            'model' => 'gtp-3.5-turbo-davinci',
-            'messages' => [
-                ['role' => 'user', 'content' => $query],
-            ],
-            'max_tokens' => 100,
-            'temperature' => 0.5,
-        ]);
-        return $response;
+        $this->client = new Client();
+        $this->projectId = $projectId;
+        $this->location = $location;
+        $this->modelName = $modelName;
     }
 
-   /* public function compareMemoires($titre1, $resume1, $titre2, $resume2)
+    public function comparerMemoires($titre1, $resume1, $titre2, $resume2)
     {
-        $query = "Compare these two theses based on their titles and summaries. Score their similarity on a scale from 0 to 10, where 0 means completely different and 10 means almost identical. Consider the following aspects: semantic meaning, main themes, concepts and ideas, vocabulary and terminology, and structure and organization. Provide a brief explanation for the score.
-        Thesis 1:
-        Title: $titre1
-        Summary: $resume1
-    
-        Thesis 2:
-        Title: $titre2
-        Summary: $resume2";
+        // Préparer les données textuelles pour Vertex AI
+        $texte_a = $titre1 . " " . $resume1;
+        $texte_b = $titre2 . " " . $resume2;
+
+        $données = [
+            'texte_a' => $texte_a,
+            'texte_b' => $texte_b,
+        ];
 
         try {
-            $response = $this->client->completions()->createStreamed([
-                'model' => 'gpt-3.5-turbo-instruct',
-                'messages' => [
-                    ['role' => 'user', 'content' => $query],
+            // Envoyer une requête à l'API Vertex AI
+            $response = $this->client->post("https://{$this->location}-ai.googleapis.com/v1/projects/{$this->projectId}/locations/{$this->location}/models/{$this->modelName}:predict", [
+                'json' => $données,
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                    'Content-Type' => 'application/json',
                 ],
-                'max_tokens' => 100,
-                'temperature' => 0.5,
             ]);
 
-            $resultText = $response['choices'][0]['message']['content'];
+            // Extraire le corps de la réponse JSON
+            $responseData = json_decode($response->getBody(), true);
 
-            // Analyser le texte pour extraire la note et la justification
-            preg_match('/Similarity Score: (\d+)\/10/', $resultText, $matches);
-            $score = isset($matches[1]) ? $matches[1] : 'N/A';
-            $justification = trim(str_replace("Similarity Score: $score/10", '', $resultText));
+            // Extraire le score de similarité et la justification de la réponse
+            $score = $responseData['similarity_score'] ?? null;
+            $justification = $responseData['justification'] ?? null;
 
             return [
                 'score' => $score,
                 'justification' => $justification,
             ];
-        } catch (Exception $e) {
-            // Gérer les erreurs, y compris les erreurs de quota
+        } catch (RequestException $e) {
+            // Gérer les erreurs de requête, y compris les erreurs HTTP
+            $message = "Une erreur s'est produite lors de la requête à l'API Vertex AI : " . $e->getMessage();
             return [
-                'error' => 'An error occurred: ' . $e->getMessage(),
+                'erreur' => $message,
             ];
         }
-    }*/
+    }
+
+    // Fonction pour obtenir le jeton d'accès OAuth2
+    private function getAccessToken()
+    {
+        // Utilisez la bibliothèque Google\Auth pour obtenir le jeton d'accès
+        $credentials = ApplicationDefaultCredentials::getCredentials();
+        $authToken = $credentials->fetchAuthToken();
+
+        return $authToken['access_token'];
+    }
 }
