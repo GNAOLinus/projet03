@@ -21,34 +21,36 @@
             </div>
         </div>
 
-        <!-- Gestion des soutenances -->
+        
         <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">Gestion des soutenances</div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><a href="{{ route('soutenances.index') }}" class="btn btn-primary w-100">Programmer les soutenances</a></li>
-                        <li class="list-group-item"><a href="{{ route('agenda') }}" class="btn btn-secondary w-100">Gestion des calendriers</a></li>
-                    </ul>
+            <div class="container">
+                <!-- Gestion des soutenances -->
+                <div class="card">
+                    <div class="card-header">Gestion des soutenances</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><a href="{{ route('soutenances.index') }}" class="btn btn-primary w-100">Programmer les soutenances</a></li>
+                            <li class="list-group-item"><a href="{{ route('agenda') }}" class="btn btn-secondary w-100">Gestion des calendriers</a></li>
+                        </ul>
+                    </div>
+                </div>
+                 <!-- Gestion des jurys -->
+                <div class="card mt-2">
+                    <div class="card-header">Gestion des jurys</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><a href="{{ route('juries.create') }}" class="btn btn-primary w-100">Créer un jury</a></li>
+                            <li class="list-group-item"><a href="{{ route('juries.index') }}" class="btn btn-light w-100">Liste des jurys</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+            
         </div>
     </div>
 
     <div class="row">
-        <!-- Gestion des jurys -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">Gestion des jurys</div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><a href="{{ route('juries.create') }}" class="btn btn-primary w-100">Créer un jury</a></li>
-                        <li class="list-group-item"><a href="{{ route('juries.index') }}" class="btn btn-light w-100">Liste des jurys</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
+       
         <!-- Gestion des binômes -->
         <div class="col-md-6 mb-4">
             <div class="card">
@@ -61,10 +63,7 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    @if (Auth::user()->id_role == 4)
-    <div class="row">
+        @if (Auth::user()->id_role == 4)
         <!-- Gestion des sites ESM-Bénin -->
         <div class="col-md-6 mb-4">
             <div class="card">
@@ -77,7 +76,12 @@
                 </div>
             </div>
         </div>
+        @endif
+    </div>
 
+    @if (Auth::user()->id_role == 4)
+    <div class="row">
+      
         <!-- Copier le lien pour -->
         <div class="col-md-6 mb-4">
             <div class="card">

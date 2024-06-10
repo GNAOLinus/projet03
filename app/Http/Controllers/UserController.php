@@ -29,10 +29,42 @@ class UserController extends Controller
     }
     public function profile(Request $Request)
     {
+        $user = auth()->user();
         $etudiant=User::findorfail($Request->id);
-        $invitation=$Request->invitation;
-        //return response()->json($etudiant);
-    return view('profile', compact('etudiant','invitation'));
+        // Vérifier si l'utilisateur a envoyé une invitation à cet étudiant
+            $invitationEnvoyee = Invitations::where('sender_id', $user->id)
+                ->where('receiver_id', $etudiant->id)
+                ->exists();
+
+            // Vérifier si l'utilisateur a reçu une invitation de cet étudiant
+            $invitationRecue = Invitations::where('sender_id', $etudiant->id)
+                ->where('receiver_id', $user->id)
+                ->exists();
+
+            // Marquer l'étudiant en fonction de l'état de leurs invitations
+            $invitation = null;
+
+            if ($invitationEnvoyee) {
+                // Si une invitation a été envoyée par l'utilisateur connecté
+                $etudiant->invitation = 'envoyée'; // Marquer comme 'envoyée'
+                $invitation = Invitations::where('sender_id', $user->id)
+                    ->where('receiver_id', $etudiant->id)
+                    ->first(); // Récupérer l'invitation envoyée par l'utilisateur connecté
+            } elseif ($invitationRecue) {
+                // Si une invitation a été reçue par l'utilisateur connecté
+                $etudiant->invitation = 'en_attente'; // Marquer comme 'en attente'
+                $invitation = Invitations::where('sender_id', $etudiant->id)
+                    ->where('receiver_id', $user->id)
+                    ->first(); // Récupérer l'invitation reçue par l'utilisateur connecté
+            } else {
+                // Si aucune invitation n'a été envoyée ni reçue
+                $etudiant->invitation = 'inviter'; // Marquer comme 'inviter'
+            }
+
+            // Passer l'ID de l'invitation à la vue
+            $etudiant->invitation_id = $invitation ? $invitation->id : null;
+        //return response()->json( $etudiant);
+    return view('profile', compact('etudiant'));
     }
 
     public function search(Request $request)
