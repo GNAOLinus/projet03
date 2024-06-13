@@ -18,6 +18,7 @@ class CreateDenonciationsTable extends Migration
             $table->string('preuve1')->nullable();
             $table->string('preuve2')->nullable();
             $table->string('preuve3')->nullable();
+            $table->string('statut')->nullable();
             $table->timestamps();
         });
     }

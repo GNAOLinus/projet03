@@ -3,7 +3,6 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BinomeController;
-use App\Http\Controllers\comparaisonController;
 use App\Http\Controllers\DenonciationController;
 use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\filiereController;

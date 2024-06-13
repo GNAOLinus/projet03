@@ -18,5 +18,6 @@ class Denonciation extends Model
         'preuve1',
         'preuve2',
         'preuve3',
+        'statut',
     ];
 }

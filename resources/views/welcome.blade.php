@@ -51,7 +51,7 @@
                     </a>
                 </p>
                 <p>
-                    <a href="{{route('denonciation.index')}}">
+                    <a href="{{route('denonciation.create')}}">
                         <i class="fas fa-exclamation-circle"></i> Plainte
                     </a>
                 </p>

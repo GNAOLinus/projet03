@@ -134,8 +134,8 @@
             <div class="card-header">Gestion des Plainte</div>
             <div class="card-body">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><a href="{{ route('Denonciation.allplainte') }}" class="btn btn-primary w-100">liste des plaintes non traiter</a></li>
-                    <li class="list-group-item"><a href="{{ route('Denonciation.allplainte') }}" class="btn btn-secondary w-100">liste des plaintes non traiter</a></li>
+                    <li class="list-group-item"><a href="{{ route('denonciation.index') }}" class="btn btn-primary w-100">liste des plaintes non traiter</a></li>
+                    <li class="list-group-item"><a href="{{ route('denonciation.index') }}" class="btn btn-secondary w-100">liste des plaintes non traiter</a></li>
                 </ul>
             </div>
         </div>

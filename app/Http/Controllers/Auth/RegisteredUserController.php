@@ -103,6 +103,7 @@ class RegisteredUserController extends Controller
                 'id_promotion' => $request->id_promotion,
                 'id_diplome' => $request->id_diplome,
                 'phone' => $request->phone,
+                'matricule'=>$request->matricule,
             ]);
 
             event(new Registered($user));
@@ -117,7 +118,7 @@ class RegisteredUserController extends Controller
         }
 
     } elseif ($request->id_role == 3) {
-        $isPreRegistered = $this->vérificationprof($request->name, $request->matricule);
+        $isPreRegistered = $this->VerificationAutreUnser($request->name, $request->matricule ,$request->id_role);
         // Création de l'utilisateur pour les rôles autres qu'ensiagnt
         if ($isPreRegistered) {
         $user = User::create([
@@ -129,6 +130,7 @@ class RegisteredUserController extends Controller
             'id_filiere' => $request->id_filiere,
             'id_promotion' => $request->id_promotion,
             'phone' => $request->phone,
+            'matricule'=>$request->matricule,
         ]);
 
         event(new Registered($user));
@@ -137,12 +139,15 @@ class RegisteredUserController extends Controller
         return redirect()->route('dashboard');
     } else {
         // Redirection vers la vue d'enregistrement avec les erreurs
-        return redirect()->to('http://127.0.0.1:8000/register/eyJpdiI6InVKUS85UG42RHhOeWJESTlST09sOVE9PSIsInZhbHVlIjoiVElEVThsbDlJNEdrSXlKSWI5OFdpdlJSNFEwaW5ObEdaZERENlJJQm5kbGxDR3U1QkRaRktKWENPK2Fmd3hJelUvNG54azVjMkU3MXBpWmRhcU0yL0krOVV4STB3MmlVQ2R6UXpxWExEbms9IiwibWFjIjoiYzMzY2ZmMDkzZGY4MzEyZGJlZGM5MzdiYjU3ZGQ0ZTYxNThiZDFjNDM0MzcxNzVjZDdmMzMyMjA3ZjEyYTM4OCIsInRhZyI6IiJ9')
+        return redirect()->to('http://127.0.0.1:8000/register/eyJpdiI6InFkMTFJNEZHbEZ6cnc5OWVGSzE2WVE9PSIsInZhbHVlIjoiWmNpaWtBazBPV2hRTnAveE1GdzFHZWNhUFVBZXVEbE5JVEVmdXVGM09EVTFvTFRHRE9MR1pnYXdMZlRjK3llQ3p2QUF2bUNMbGV0cldJWU0zWXJPeS9nMmRLUE13UGNpd3lsUUxNQlJ5djQ9IiwibWFjIjoiYzkxMmI2MDEyMzY0NDA1YjU2YmQzNWE3MzRhMWZhNzgxZWI1YjFhZWM4MjhmZGNmNTEyMTVlNzUwNThjNzNjOSIsInRhZyI6IiJ9')
                 ->withErrors(['message' => 'Informations incorrectes de l\'étudiant.']);
     }
     } else
     {
         // Création de l'utilisateur pour le rôle admin
+        $isPreRegistered = $this->VerificationAutreUnser($request->name, $request->matricule,$request->id_role );
+        // Création de l'utilisateur pour les rôles autres qu'ensiagnt
+        if ($isPreRegistered) {
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -152,12 +157,18 @@ class RegisteredUserController extends Controller
             'id_filiere' => $request->id_filiere,
             'id_promotion' => $request->id_promotion,
             'phone' => $request->phone,
+            'matricule'=>$request->matricule,
         ]);
 
         event(new Registered($user));
         Auth::login($user);
 
         return redirect()->route('dashboard');
+    } else {
+        // Redirection vers la vue d'enregistrement avec les erreurs
+        return redirect()->to('http://127.0.0.1:8000/register/eyJpdiI6IlYyOHBLYkV4dWgvcjZQV0kwS3dETXc9PSIsInZhbHVlIjoiTFg4clUxSnY1WlVHMU5pTkovTUxyZDNXTEM0TXBOeTdteFBmc3hnVUltUWZCbE9tTmh4WFV3QzM4NktmR2RhalcycnZJeEFRYmNrNVNjLy9HOU01Z2RZL2pjTTRFQlhYQjlJOFltVHd2TVE9IiwibWFjIjoiMTY2YzZkMGVlMjdiOTAwYWIwOGY1MzM4YWU4YmY2ZmZjYzlhZWY3OTgzOTQ0OTQ3ZTkyNTA4NDJiZDNiM2MzNSIsInRhZyI6IiJ9')
+                ->withErrors(['message' => 'Informations incorrectes de l\'administreur.']);
+    }
     }
 }
 /**
@@ -235,16 +246,28 @@ class RegisteredUserController extends Controller
      * @param int $site
      * @return bool
      */
-    private function vérificationprof($name, $matricule)
+    private function VerificationAutreUnser($name, $matricule ,$role)
     {
-        // Vérifier si le fichier Excel est vide
-        $filePath = public_path('preinscriptionexcel\preinscriptionsenseignant.xlsx');
-        if (filesize($filePath) === 0) {
-            
-            return false; // Fichier vide, renvoyer un message
-            $messageErreur = "Le fichier de préinscription est vide. Veuillez télécharger le fichier et réessayer.";
-            return $messageErreur;
+        if ($role == 3) {
+            $filePath = public_path('preinscriptionexcel\preinscriptionsenseignant.xlsx');
+            if (filesize($filePath) === 0) {
+                
+                return false; // Fichier vide, renvoyer un message
+                $messageErreur = "Le fichier de préinscription est vide. Veuillez télécharger le fichier et réessayer.";
+                return $messageErreur;
+            }
+        } elseif($role == 1) {
+            $filePath = public_path('preinscriptionexcel\PreInscriptionsaAdmin.xlsx');
+            if (filesize($filePath) === 0) {
+                
+                return false; // Fichier vide, renvoyer un message
+                $messageErreur = "Le fichier de préinscription est vide. Veuillez télécharger le fichier et réessayer.";
+                return $messageErreur;
+            }
         }
+        
+        // Vérifier si le fichier Excel est vide
+     
  
        
     

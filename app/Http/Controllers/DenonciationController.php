@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Denonciation;
 use App\Notifications\DenonciationSubmitted;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DenonciationTraitee;
+use App\Notifications\DenonciationTraiteeNotification;
 
 class DenonciationController extends Controller
 {
@@ -17,15 +20,15 @@ class DenonciationController extends Controller
      */
     public function index()
     {
-        return view('denonciation');
+        $denonciations = Denonciation::all();
+
+        return view('plainte.allplainte', compact('denonciations'));
+    }
+    public function create()
+    {
+        return view('plainte.index');
     }
 
-    public function allplainte()
-    { 
-        $plaintes = Denonciation::all();
-
-        return view('plainte.affiche', compact('plaintes'));
-    }
  
 
     /**
@@ -39,11 +42,12 @@ class DenonciationController extends Controller
         'name' => 'required|string|max:255',
         'denonciation' => 'required|string|in:plagiat,bugue,autre',
         'plainte' => 'required|string',
-        'titre_memoire' => 'required_if:denonciation,plagiat|string|max:255',
+        'titre_memoire' => 'nullable|required_if:denonciation,plagiat|string|max:255',
         'preuve1' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'preuve2' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'preuve3' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
     ]);
+    
 
     // Gestion des fichiers téléchargés
     $preuve1Path = null;
@@ -86,7 +90,6 @@ class DenonciationController extends Controller
         $admin->notify(new DenonciationSubmitted($denonciation));
     }
 
-    $denonciation->notify(new DenonciationSubmitted($denonciation));
 
     // Redirection après la soumission du formulaire
     return redirect()->back()->with('success', 'Votre dénonciation a été soumise avec succès.');
@@ -96,9 +99,11 @@ class DenonciationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $denonciation=Denonciation::findorfail($id);
+
+        return view('plainte.show', compact('denonciation'));
     }
 
     /**
@@ -112,11 +117,28 @@ class DenonciationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
-    }
+        $denonciation = Denonciation::findOrFail($id);
+        
+        // Validate the request
+        $request->validate([
+            'statut' => 'required|in:en_attente,traitee',
+        ]);
+        
+        // Update the status
+        $denonciation->statut = $request->statut;
+        $denonciation->save();
+    
+        // Send email notification if the status is 'traitee'
+        if ($request->statut == 'traitee') {
+            //$denonciation->email->notify(new DenonciationTraiteeNotification($denonciation));
+        }
+        
+        return redirect()->back()->with('success', 'Statut de la dénonciation mis à jour avec succès.');
 
+    }
+    
     /**
      * Remove the specified resource from storage.
      */
