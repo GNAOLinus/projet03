@@ -7,6 +7,7 @@ use App\Http\Controllers\comparaisonController;
 use App\Http\Controllers\DenonciationController;
 use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\filiereController;
+use App\Http\Controllers\GeminiController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\JuryController;
 use App\Http\Controllers\MemoireController;
@@ -32,6 +33,7 @@ Route::get('conditions_d_utilisation', function () {
     return view('condition');
 });
 Route::resource('denonciation', DenonciationController::class);
+Route::get('/denonciation/liste', [recherchecontroller::class, 'allplainte'])->name('Denonciation.allplainte');
 Route::prefix('/recherche')->group(function(){
     Route::get('/filtre', [recherchecontroller::class, 'show'])->name('recherche.filtre');
     Route::get('/recherche', [recherchecontroller::class, 'search'])->name('recherche');
@@ -41,7 +43,8 @@ Route::prefix('/recherche')->group(function(){
 Route::get('/memoire/download/{id}', [MemoireController::class, 'download'])->name('memoire.download');
 Route::get('/memoires/{memoire}/previsualiser', [MemoireController::class, 'previsualiser'])->name('memoires.previsualiser');
 //Route::get('/compare/{id}', [comparaisonController::class, 'compare']);
- 
+Route::get('/compare', [GeminiController::class, 'comparerMemoires']);
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/generate-link/{role}/{promotion}/{diplome}', [TeacherController::class, 'generateLink'])->name('generate.link');
 

@@ -36,7 +36,7 @@
                     </div>
                     <!-- Description de la plainte -->
                     <div class="mt-2">
-                        <textarea name="plainte" id="plainte" cols="10" rows="5" class="form-control" placeholder="Décrivez votre plainte ici...">{{ old('plainte') }}</textarea>
+                        <textarea name="plainte" id="plainte" cols="5" rows="2" class="form-control" placeholder="Décrivez votre plainte ici...">{{ old('plainte') }}</textarea>
                         <x-input-error :messages="$errors->get('plainte')" class="mt-2" />
                     </div>
                     <!-- Preuves -->

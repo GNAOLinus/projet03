@@ -50,6 +50,11 @@
                         <i class="fas fa-envelope"></i> esmbenin@gmail.com
                     </a>
                 </p>
+                <p>
+                    <a href="{{route('denonciation.index')}}">
+                        <i class="fas fa-exclamation-circle"></i> Plainte
+                    </a>
+                </p>
             </div>
         </div>
     </div>
