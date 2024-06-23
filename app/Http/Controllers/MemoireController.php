@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Binome;
 use App\Http\Controllers\ComparaisonController;
+use App\Models\Evaluations;
 use App\Models\Filiere;
 use App\Models\Memoire;
 use App\Models\promotion;
@@ -13,6 +14,7 @@ use App\Models\User;
 use App\Notifications\EnvoiMemoireNotification;
 use App\Notifications\ModifMemoireNotification;
 use Illuminate\Http\Request;
+use App\Jobs\CompareMemoireJob;
 
 class MemoireController extends Controller
 {
@@ -59,12 +61,9 @@ class MemoireController extends Controller
         $this->uploadMemoireFile($memoire, $request);
 
         $memoire->save();
-
-        $memoireId = $memoire->id;
-        // Appeler la fonction compare du comparaisonController
-            // $comparaisonController = app(ComparaisonController::class);
-              //  $comparaisonController->compare($memoireId);
-
+        //lance une comparaisont des memoire 
+         CompareMemoireJob::dispatch($memoire->id);
+        
        $binomeId = $request->input('id_binome');
 
 
@@ -275,13 +274,69 @@ et a la fonction de sauvegarde des document */
 // elle permet de stocker les memoire dans le dossier public/memoires
     protected function uploadMemoireFile(Memoire $memoire, Request $request)
     {
+        $noms= auth()->user()->name ;
         if ($request->hasFile('fichier')) {
             $file = $request->file('fichier');
             $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('memoires/'), $filename);
+            $file->move(public_path('memoires/'), 'Memoire'.$noms);
             $memoire->fichier = $filename;
         }
     }
 
+    public function compare($id)
+{
+    try {
+        // Instancier le MemoireController
+        $memoireController = new GeminiComparaisonController();
 
+        // Appeler la méthode compare() du MemoireController
+        $results = $memoireController->comparerMemoires($id);
+
+        // Vérifier si les résultats sont vides
+        if (empty($results)) {
+            return response()->json(['message' => 'Aucun résultat trouvé pour la comparaison.'], 404);
+        }
+
+        // Calculer la moyenne des pourcentages de similarité
+        $totalSimilarity = array_sum(array_column($results, 'similarity'));
+        $averageSimilarity = $totalSimilarity / count($results);
+
+        // Trier les résultats par pourcentage de similarité décroissant
+        usort($results, function($a, $b) {
+            return $b['similarity'] - $a['similarity'];
+        });
+
+        // Récupérer les ID des cinq mémoires ayant le pourcentage de similarité le plus élevé
+        $topMemoires = array_slice($results, 0, 5);
+
+        // Préparer un tableau pour stocker les informations d'ID et de pourcentage
+        $memoireDetails = [];
+        foreach ($topMemoires as $memoire) {
+            $memoireDetails[] = $memoire['memoire_id'] . ' (' . round($memoire['similarity'], 2) . '%)';
+        }
+
+        // Enregistrer l'évaluation dans la base de données
+        $evaluation = new Evaluations([
+            'id_memoire' => $id,
+            'data' => json_encode([
+                'topSimilarities' => array_column($topMemoires, 'similarity'),
+                'top_memoire_ids' => array_column($topMemoires, 'memoire_id'),
+                'results' => $results
+            ]),
+        ]);
+        $evaluation->save();
+
+        // Retourner la réponse avec les résultats et la moyenne de similarité
+        return response()->json([
+            'message' => 'Comparaison réussie',
+            'averageSimilarity' => round($averageSimilarity, 2),
+            'topMemoires' => $memoireDetails
+        ]);
+        
+    } catch (\Exception $e) {
+        // Gérer les exceptions et afficher un message d'erreur
+        return response()->json(['error' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
+    }
+}
+   
 }

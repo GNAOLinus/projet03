@@ -19,7 +19,9 @@
                     </tr>
                     <tr>
                         <th>Email</th>
-                        <td>{{ $denonciation->email }}</td>
+                        <td><a href="mailto:{{ $denonciation->email }}?subject=Information%20sur%20la%20Dénonciation&body=Bonjour">
+                            <i class="fas fa-envelope"></i> {{ $denonciation->email }}
+                        </a></td>
                     </tr>
                     <tr>
                         <th>Nom</th>

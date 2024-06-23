@@ -36,9 +36,12 @@
                     </thead>
                     <tbody>
                         @foreach($denonciations as $denonciation)
+                        @if ($denonciation->statut === null)
                             <tr>
                                 <td>{{ $denonciation->id }}</td>
-                                <td>{{ $denonciation->email }}</td>
+                                <td><a href="mailto:{{ $denonciation->email }}?subject=Information%20sur%20la%20Dénonciation&body=Bonjour">
+                                    <i class="fas fa-envelope"></i> {{ $denonciation->email }}
+                                </a></td>
                                 <td>{{ $denonciation->name }}</td>
                                 <td>{{ $denonciation->denonciation }}</td>
                                 <td>{{ $denonciation->plainte }}</td>
@@ -48,6 +51,7 @@
                                     <a href="{{ route('denonciation.show', $denonciation->id) }}" class="btn btn-primary">Traiter</a>
                                 </td>
                             </tr>
+                        @endif
                         @endforeach
                     </tbody>
                 </table>

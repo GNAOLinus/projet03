@@ -183,7 +183,7 @@ class RegisteredUserController extends Controller
     private function checkPreRegistration($name, $matricule, $filiere, $site)
     {
         // Vérifier si le fichier Excel est vide
-        $filePath = public_path('preinscriptionexcel\preinscriptions.xlsx');
+        $filePath = public_path('preinscriptionexcel\PreInscriptionsEtudiant.xlsx');
         if (filesize($filePath) === 0) {
             
             return false; // Fichier vide, renvoyer un message

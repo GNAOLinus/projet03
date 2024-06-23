@@ -5,7 +5,9 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BinomeController;
 use App\Http\Controllers\DenonciationController;
 use App\Http\Controllers\EtudiantController;
+use App\Http\Controllers\EvaluationContoller;
 use App\Http\Controllers\filiereController;
+use App\Http\Controllers\GeminiComparaisonController;
 use App\Http\Controllers\GeminiController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\JuryController;
@@ -32,7 +34,8 @@ Route::get('conditions_d_utilisation', function () {
     return view('condition');
 });
 Route::resource('denonciation', DenonciationController::class);
-Route::get('/denonciation/liste', [recherchecontroller::class, 'allplainte'])->name('Denonciation.allplainte');
+Route::get('/denonciation/liste/taiter', [DenonciationController::class, 'denonciationstraite'])->name('denonciation.traite');
+Route::get('/denonciation/liste', [recherchecontroller::class, 'allplainte'])->name('denonciation.allplainte');
 Route::prefix('/recherche')->group(function(){
     Route::get('/filtre', [recherchecontroller::class, 'show'])->name('recherche.filtre');
     Route::get('/recherche', [recherchecontroller::class, 'search'])->name('recherche');
@@ -41,8 +44,9 @@ Route::prefix('/recherche')->group(function(){
 
 Route::get('/memoire/download/{id}', [MemoireController::class, 'download'])->name('memoire.download');
 Route::get('/memoires/{memoire}/previsualiser', [MemoireController::class, 'previsualiser'])->name('memoires.previsualiser');
-//Route::get('/compare/{id}', [comparaisonController::class, 'compare']);
-Route::get('/compare', [GeminiController::class, 'comparerMemoires']);
+Route::get('/compare/{id}', [MemoireController::class, 'compare']);
+Route::resource('evaluation', EvaluationContoller::class)->except('show');
+Route::post('/evaluation/doc', [EvaluationContoller::class, 'document'])->name('evaluation.doc');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/generate-link/{role}/{promotion}/{diplome}', [TeacherController::class, 'generateLink'])->name('generate.link');

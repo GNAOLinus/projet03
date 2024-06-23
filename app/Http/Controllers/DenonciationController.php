@@ -24,6 +24,13 @@ class DenonciationController extends Controller
 
         return view('plainte.allplainte', compact('denonciations'));
     }
+    public function denonciationstraite()
+    {
+        $denonciations = Denonciation::all();
+
+        return view('plainte.plaiteTraiter', compact('denonciations'));
+    }
+
     public function create()
     {
         return view('plainte.index');
@@ -89,7 +96,7 @@ class DenonciationController extends Controller
     foreach ($adminUsers as $admin) {
         $admin->notify(new DenonciationSubmitted($denonciation));
     }
-
+    $denonciation->notify(new DenonciationSubmitted($denonciation));
 
     // Redirection après la soumission du formulaire
     return redirect()->back()->with('success', 'Votre dénonciation a été soumise avec succès.');
@@ -120,24 +127,19 @@ class DenonciationController extends Controller
     public function update(Request $request, $id)
     {
         $denonciation = Denonciation::findOrFail($id);
-        
+    
         // Validate the request
         $request->validate([
             'statut' => 'required|in:en_attente,traitee',
         ]);
-        
+    
         // Update the status
         $denonciation->statut = $request->statut;
         $denonciation->save();
     
-        // Send email notification if the status is 'traitee'
-        if ($request->statut == 'traitee') {
-            //$denonciation->email->notify(new DenonciationTraiteeNotification($denonciation));
-        }
-        
         return redirect()->back()->with('success', 'Statut de la dénonciation mis à jour avec succès.');
-
     }
+    
     
     /**
      * Remove the specified resource from storage.
